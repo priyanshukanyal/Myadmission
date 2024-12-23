@@ -1,0 +1,86 @@
+/* General page styles */
+.shortlisted-page {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f8f9fa; /* Light gray background */
+  border-radius: 8px;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333; /* Dark gray text */
+  text-align: center;
+}
+
+/* Card styles */
+.university-card {
+  display: flex;
+  background-color: #fff; /* White background */
+  border: 1px solid #ddd; /* Light border */
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.university-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* Hover effect */
+}
+
+.university-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures image scales properly */
+  border-right: 1px solid #ddd;
+}
+
+.horizontal-card {
+  flex-direction: row;
+  padding: 15px;
+}
+
+.horizontal-card .card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #0056b3; /* Dark blue text for university name */
+}
+
+.card-text {
+  font-size: 0.95rem;
+  color: #555; /* Medium gray text */
+  margin-bottom: 5px;
+}
+
+/* Button styles */
+.remove-btn {
+  align-self: flex-start;
+  background-color: #dc3545; /* Bootstrap danger color */
+  color: #fff;
+  border: none;
+  font-size: 0.9rem;
+  padding: 8px 12px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.remove-btn:hover {
+  background-color: #c82333; /* Darker red on hover */
+}
+
+/* No results message */
+.no-results {
+  font-size: 1.2rem;
+  color: #777;
+  text-align: center;
+  margin-top: 20px;
+}

@@ -1,0 +1,15 @@
+.hero-section {
+  background: url("https://images.fineartamerica.com/images/artworkimages/mediumlarge/3/oral-roberts-university-campus-landscape-black-and-white-black-and-white-tulsa-oklahoma-gregory-ballos.jpg")
+    center/cover no-repeat;
+  padding: 100px 0;
+}
+
+.info-card {
+  border: none;
+  background: #f8f9fa;
+}
+
+.cta-section {
+  background: #007bff;
+  padding: 80px 0;
+}
