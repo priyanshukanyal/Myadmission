@@ -80,3 +80,12 @@
 .shortlist-btn:hover {
   background-color: #0056b3;
 }
+.filter-section {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-right: 1px solid #ddd;
+  height: 100%;
+}
+.filter-form {
+  margin-bottom: 20px;
+}

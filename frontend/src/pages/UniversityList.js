@@ -1,31 +1,53 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Form, Button, Nav } from "react-bootstrap";
 import "../designsAndCss/UniversityList.css";
-import axios from "axios"; // Import axios for API calls
+import axios from "axios";
 
 const UniversityList = () => {
   const [universities, setUniversities] = useState([]);
   const [shortlisted, setShortlisted] = useState([]);
   const [activeTab, setActiveTab] = useState("universities");
   const [filters, setFilters] = useState({
-    country: "",
-    state: "",
-    program: "",
+    location: "",
+    privatePublic: "",
+    totalEnrollment: "",
+    undergraduates: "",
+    male: "",
+    female: "",
+    sATERWMin: "",
+    sATERWMax: "",
+    sATMMin: "",
+    sATMMax: "",
+    aCTMin: "",
+    aCTMax: "",
+    financialAid: "",
+    pellGrant: "",
+    expenseMin: "",
+    expenseMax: "",
+    studentLoans: "",
+    averageDebt: "",
+    applicants: "",
+    accepted: "",
+    enrolled: "",
+    gradIn6Years: "",
+    returningFreshmen: "",
+    academics: "",
+    social: "",
+    qualityOfLife: "",
   });
 
-  // Fetch universities from backend
-  const fetchUniversities = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:8111/api/universities"
-      );
-      setUniversities(response.data); // Update state with API data
-    } catch (error) {
-      console.error("Error fetching universities:", error.message);
-    }
-  };
-
   useEffect(() => {
+    const fetchUniversities = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8111/api/universities"
+        );
+        setUniversities(response.data);
+      } catch (error) {
+        console.error("Error fetching universities:", error.message);
+      }
+    };
+
     fetchUniversities();
   }, []);
 
@@ -40,12 +62,12 @@ const UniversityList = () => {
   };
 
   const filteredUniversities = universities.filter((uni) => {
-    const { country, state, program } = filters;
-    return (
-      (!country || uni.location.includes(country)) &&
-      (!state || uni.location.includes(state)) &&
-      (!program || uni[program] === true)
-    );
+    return Object.entries(filters).every(([key, value]) => {
+      if (!value) return true;
+      if (key === "location") return uni.location.includes(value);
+      if (key === "privatePublic") return uni.privatePublic === value;
+      return true;
+    });
   });
 
   return (
@@ -64,169 +86,636 @@ const UniversityList = () => {
         </Nav.Item>
       </Nav>
 
-      {activeTab === "universities" && (
-        <>
+      <Row>
+        <Col md={3} className="filter-section">
           <Form className="filter-form">
-            <Row>
-              <Col md={4}>
-                <Form.Group>
-                  <Form.Label>Country</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="country"
-                    placeholder="Enter Country"
-                    onChange={handleFilterChange}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={4}>
-                <Form.Group>
-                  <Form.Label>State</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="state"
-                    placeholder="Enter State"
-                    onChange={handleFilterChange}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={4}>
-                <Form.Group>
-                  <Form.Label>Program</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="program"
-                    placeholder="Enter Program (e.g., engineering)"
-                    onChange={handleFilterChange}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
+            <h4>Filters</h4>
+            {Object.keys(filters).map((filterKey) => (
+              <Form.Group key={filterKey} className="mb-3">
+                <Form.Label>
+                  {filterKey
+                    .replace(/([A-Z])/g, " $1")
+                    .replace(/^./, (str) => str.toUpperCase())}
+                </Form.Label>
+                <Form.Control
+                  type="text"
+                  name={filterKey}
+                  placeholder={`Enter ${filterKey}`}
+                  onChange={handleFilterChange}
+                />
+              </Form.Group>
+            ))}
           </Form>
+        </Col>
 
-          <Row className="university-cards">
-            {filteredUniversities.length > 0 ? (
-              filteredUniversities.map((uni) => (
-                <Col md={12} key={uni._id} className="mb-4">
-                  <Card className="university-card horizontal-card">
-                    <Row className="no-gutters">
-                      <Col md={4}>
-                        <Card.Img
-                          src={uni.image || "https://via.placeholder.com/150"}
-                          alt={uni.universityName}
-                          className="university-card-img"
-                        />
-                      </Col>
-                      <Col md={8}>
-                        <Card.Body>
-                          <Card.Title>{uni.universityName}</Card.Title>
-                          <Card.Text>
-                            <strong>Website:</strong>{" "}
-                            <a
-                              href={uni.website}
-                              target="_blank"
-                              rel="noreferrer"
+        <Col md={9}>
+          {activeTab === "universities" && (
+            <Row className="university-cards">
+              {filteredUniversities.length > 0 ? (
+                filteredUniversities.map((uni) => (
+                  <Col md={12} key={uni._id} className="mb-4">
+                    <Card className="university-card horizontal-card">
+                      <Row className="no-gutters">
+                        <Col md={4}>
+                          <Card.Img
+                            src={uni.image || "https://via.placeholder.com/150"}
+                            alt={uni.universityName}
+                            className="university-card-img"
+                          />
+                        </Col>
+                        <Col md={8}>
+                          <Card.Body>
+                            <Card.Title>{uni.universityName}</Card.Title>
+                            <Card.Text>
+                              <strong>Website:</strong>{" "}
+                              <a
+                                href={uni.website}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                {uni.website}
+                              </a>
+                            </Card.Text>
+                            <Card.Text>
+                              <strong>Location:</strong> {uni.location}
+                            </Card.Text>
+                            <Card.Text>
+                              <strong>Type:</strong> {uni.privatePublic}
+                            </Card.Text>
+                            <Card.Text>
+                              <strong>Total Enrollment:</strong>{" "}
+                              {uni.totalEnrollment}
+                            </Card.Text>
+                            <Card.Text>
+                              <strong>Undergraduates:</strong>{" "}
+                              {uni.undergraduates}
+                            </Card.Text>
+                            <Card.Text>
+                              <strong>Male:</strong> {uni.male}%
+                            </Card.Text>
+                            <Card.Text>
+                              <strong>Female:</strong> {uni.female}%
+                            </Card.Text>
+                            <Card.Text>
+                              <strong>SAT ERW Range:</strong> {uni.satErwMin} -{" "}
+                              {uni.satErwMax}
+                            </Card.Text>
+                            <Card.Text>
+                              <strong>SAT Math Range:</strong> {uni.satMathMin}{" "}
+                              - {uni.satMathMax}
+                            </Card.Text>
+                            <Card.Text>
+                              <strong>ACT Range:</strong> {uni.actMin} -{" "}
+                              {uni.actMax}
+                            </Card.Text>
+                            <Card.Text>
+                              <strong>Financial Aid:</strong> {uni.financialAid}
+                              %
+                            </Card.Text>
+                            <Card.Text>
+                              <strong>Pell Grant:</strong> {uni.pellGrant}%
+                            </Card.Text>
+                            <Card.Text>
+                              <strong>Expense Range:</strong> ${uni.expenseMin}{" "}
+                              - ${uni.expenseMax}
+                            </Card.Text>
+                            <Card.Text>
+                              <strong>Student Loans:</strong> {uni.studentLoans}
+                              %
+                            </Card.Text>
+                            <Card.Text>
+                              <strong>Average Debt:</strong> {uni.averageDebt}
+                            </Card.Text>
+                            <Card.Text>
+                              <strong>Applicants:</strong> {uni.applicants}
+                            </Card.Text>
+                            <Card.Text>
+                              <strong>Accepted:</strong> {uni.accepted}%
+                            </Card.Text>
+                            <Card.Text>
+                              <strong>Enrolled:</strong> {uni.enrolled}%
+                            </Card.Text>
+                            <Card.Text>
+                              <strong>Graduation in 6 Years:</strong>{" "}
+                              {uni.gradIn6Years}%
+                            </Card.Text>
+                            <Card.Text>
+                              <strong>Returning Freshmen:</strong>{" "}
+                              {uni.returningFreshmen}%
+                            </Card.Text>
+                            <Card.Text>
+                              <strong>Academics:</strong> {uni.academics}
+                            </Card.Text>
+                            <Card.Text>
+                              <strong>Social:</strong> {uni.social}
+                            </Card.Text>
+                            <Card.Text>
+                              <strong>Quality of Life:</strong>{" "}
+                              {uni.qualityOfLife}
+                            </Card.Text>
+                            <Card.Text>
+                              <strong>Admissions Phone:</strong> {uni.phone}
+                            </Card.Text>
+                            <Card.Text>
+                              <strong>Email Address:</strong> {uni.email}
+                            </Card.Text>
+
+                            <Button
+                              variant="primary"
+                              className="shortlist-btn"
+                              onClick={() => handleShortlist(uni)}
                             >
-                              {uni.website}
-                            </a>
-                          </Card.Text>
-                          <Card.Text>
-                            <strong>Location:</strong> {uni.location}
-                          </Card.Text>
-                          <Card.Text>
-                            <strong>Type:</strong>{" "}
-                            {uni.privatePublic === "private"
-                              ? "Private"
-                              : "Public"}
-                          </Card.Text>
-                          <Card.Text>
-                            <strong>Total Enrollment:</strong>{" "}
-                            {uni.totalEnrollment}
-                          </Card.Text>
-                          <Card.Text>
-                            <strong>Undergraduates:</strong>{" "}
-                            {uni.undergraduates}
-                          </Card.Text>
-                          <Card.Text>
-                            <strong>Male:</strong> {uni.male}%
-                          </Card.Text>
-                          <Card.Text>
-                            <strong>Female:</strong> {uni.female}%
-                          </Card.Text>
-                          <Card.Text>
-                            <strong>Financial Aid:</strong>{" "}
-                            {uni.financialAid ? "Available" : "Not Available"}
-                          </Card.Text>
-                          <Card.Text>
-                            <strong>Programs:</strong>{" "}
-                            {Object.keys(uni)
-                              .filter((key) => uni[key] === true)
-                              .join(", ")}
-                          </Card.Text>
-                          <Button
-                            variant="primary"
-                            className="shortlist-btn"
-                            onClick={() => handleShortlist(uni)}
-                          >
-                            Shortlist
-                          </Button>
-                        </Card.Body>
-                      </Col>
-                    </Row>
-                  </Card>
-                </Col>
-              ))
-            ) : (
-              <p className="no-results">
-                No universities match your search criteria.
-              </p>
-            )}
-          </Row>
-        </>
-      )}
-
-      {activeTab === "shortlisted" && (
-        <Row className="university-cards">
-          {shortlisted.length > 0 ? (
-            shortlisted.map((uni) => (
-              <Col md={12} key={uni._id} className="mb-4">
-                <Card className="university-card horizontal-card">
-                  <Row className="no-gutters">
-                    <Col md={4}>
-                      <Card.Img
-                        src={uni.image || "https://via.placeholder.com/150"}
-                        alt={uni.universityName}
-                        className="university-card-img"
-                      />
-                    </Col>
-                    <Col md={8}>
-                      <Card.Body>
-                        <Card.Title>{uni.universityName}</Card.Title>
-                        <Card.Text>
-                          <strong>Location:</strong> {uni.location}
-                        </Card.Text>
-                        <Card.Text>
-                          <strong>Programs:</strong>{" "}
-                          {Object.keys(uni)
-                            .filter((key) => uni[key] === true)
-                            .join(", ")}
-                        </Card.Text>
-                      </Card.Body>
-                    </Col>
-                  </Row>
-                </Card>
-              </Col>
-            ))
-          ) : (
-            <p className="no-results">No shortlisted universities yet.</p>
+                              Shortlist
+                            </Button>
+                          </Card.Body>
+                        </Col>
+                      </Row>
+                    </Card>
+                  </Col>
+                ))
+              ) : (
+                <p className="no-results">
+                  No universities match your search criteria.
+                </p>
+              )}
+            </Row>
           )}
-        </Row>
-      )}
+
+          {activeTab === "shortlisted" && (
+            <Row className="university-cards">
+              {shortlisted.length > 0 ? (
+                shortlisted.map((uni) => (
+                  <Col md={12} key={uni._id} className="mb-4">
+                    <Card className="university-card horizontal-card">
+                      <Row className="no-gutters">
+                        <Col md={4}>
+                          <Card.Img
+                            src={uni.image || "https://via.placeholder.com/150"}
+                            alt={uni.universityName}
+                            className="university-card-img"
+                          />
+                        </Col>
+                        <Col md={8}>
+                          <Card.Body>
+                            <Card.Title>{uni.universityName}</Card.Title>
+                            <Card.Text>
+                              <strong>Location:</strong> {uni.location}
+                            </Card.Text>
+                          </Card.Body>
+                        </Col>
+                      </Row>
+                    </Card>
+                  </Col>
+                ))
+              ) : (
+                <p className="no-results">No shortlisted universities yet.</p>
+              )}
+            </Row>
+          )}
+        </Col>
+      </Row>
     </Container>
   );
 };
 
 export default UniversityList;
+
+// import React, { useState, useEffect } from "react";
+// import { Container, Row, Col, Card, Form, Button, Nav } from "react-bootstrap";
+// import "../designsAndCss/UniversityList.css";
+// import axios from "axios";
+
+// const UniversityList = () => {
+//   const [universities, setUniversities] = useState([]);
+//   const [shortlisted, setShortlisted] = useState([]);
+//   const [activeTab, setActiveTab] = useState("universities");
+//   const [filters, setFilters] = useState({
+//     location: "",
+//     privatePublic: "",
+//     totalEnrollment: "",
+//     undergraduates: "",
+//     male: "",
+//     female: "",
+//     sATERWMin: "",
+//     sATERWMax: "",
+//     sATMMin: "",
+//     sATMMax: "",
+//     aCTMin: "",
+//     aCTMax: "",
+//     financialAid: "",
+//     pellGrant: "",
+//     expenseMin: "",
+//     expenseMax: "",
+//     studentLoans: "",
+//     averageDebt: "",
+//     applicants: "",
+//     accepted: "",
+//     enrolled: "",
+//     gradIn6Years: "",
+//     returningFreshmen: "",
+//     academics: "",
+//     social: "",
+//     qualityOfLife: "",
+//   });
+
+//   useEffect(() => {
+//     const fetchUniversities = async () => {
+//       try {
+//         const response = await axios.get(
+//           "http://localhost:8111/api/universities"
+//         );
+//         setUniversities(response.data);
+//       } catch (error) {
+//         console.error("Error fetching universities:", error.message);
+//       }
+//     };
+
+//     fetchUniversities();
+//   }, []);
+
+//   const handleFilterChange = (e) => {
+//     setFilters({ ...filters, [e.target.name]: e.target.value });
+//   };
+
+//   const handleShortlist = (university) => {
+//     if (!shortlisted.some((u) => u._id === university._id)) {
+//       setShortlisted([...shortlisted, university]);
+//     }
+//   };
+
+//   const filteredUniversities = universities.filter((uni) => {
+//     return Object.entries(filters).every(([key, value]) => {
+//       if (!value) return true;
+//       if (key === "location") return uni.location.includes(value);
+//       if (key === "privatePublic") return uni.privatePublic === value;
+//       return true;
+//     });
+//   });
+
+//   return (
+//     <Container className="university-list-page">
+//       <h1 className="page-title">Explore Top Universities Abroad</h1>
+//       <Nav
+//         variant="tabs"
+//         activeKey={activeTab}
+//         onSelect={(selectedKey) => setActiveTab(selectedKey)}
+//       >
+//         <Nav.Item>
+//           <Nav.Link eventKey="universities">Universities</Nav.Link>
+//         </Nav.Item>
+//         <Nav.Item>
+//           <Nav.Link eventKey="shortlisted">Shortlisted</Nav.Link>
+//         </Nav.Item>
+//       </Nav>
+
+//       <Row>
+//         <Col md={3} className="filter-section">
+//           <Form className="filter-form">
+//             <h4>Filters</h4>
+//             <Form.Group>
+//               <Form.Label>Location</Form.Label>
+//               <Form.Control
+//                 type="text"
+//                 name="location"
+//                 placeholder="Enter Location"
+//                 onChange={handleFilterChange}
+//               />
+//             </Form.Group>
+//             <Form.Group>
+//               <Form.Label>Private/Public</Form.Label>
+//               <Form.Control
+//                 as="select"
+//                 name="privatePublic"
+//                 onChange={handleFilterChange}
+//               >
+//                 <option value="">Select</option>
+//                 <option value="private">Private</option>
+//                 <option value="public">Public</option>
+//               </Form.Control>
+//             </Form.Group>
+//           </Form>
+//         </Col>
+
+//         <Col md={9}>
+//           {activeTab === "universities" && (
+//             <Row className="university-cards">
+//               {filteredUniversities.length > 0 ? (
+//                 filteredUniversities.map((uni) => (
+//                   <Col md={12} key={uni._id} className="mb-4">
+//                     <Card className="university-card horizontal-card">
+//                       <Row className="no-gutters">
+//                         <Col md={4}>
+//                           <Card.Img
+//                             src={uni.image || "https://via.placeholder.com/150"}
+//                             alt={uni.universityName}
+//                             className="university-card-img"
+//                           />
+//                         </Col>
+//                         <Col md={8}>
+//                           <Card.Body>
+//                             <Card.Title>{uni.universityName}</Card.Title>
+//                             <Card.Text>
+//                               <strong>Website:</strong>{" "}
+//                               <a
+//                                 href={uni.website}
+//                                 target="_blank"
+//                                 rel="noreferrer"
+//                               >
+//                                 {uni.website}
+//                               </a>
+//                             </Card.Text>
+//                             <Card.Text>
+//                               <strong>Location:</strong> {uni.location}
+//                             </Card.Text>
+//                             <Button
+//                               variant="primary"
+//                               className="shortlist-btn"
+//                               onClick={() => handleShortlist(uni)}
+//                             >
+//                               Shortlist
+//                             </Button>
+//                           </Card.Body>
+//                         </Col>
+//                       </Row>
+//                     </Card>
+//                   </Col>
+//                 ))
+//               ) : (
+//                 <p className="no-results">
+//                   No universities match your search criteria.
+//                 </p>
+//               )}
+//             </Row>
+//           )}
+
+//           {activeTab === "shortlisted" && (
+//             <Row className="university-cards">
+//               {shortlisted.length > 0 ? (
+//                 shortlisted.map((uni) => (
+//                   <Col md={12} key={uni._id} className="mb-4">
+//                     <Card className="university-card horizontal-card">
+//                       <Row className="no-gutters">
+//                         <Col md={4}>
+//                           <Card.Img
+//                             src={uni.image || "https://via.placeholder.com/150"}
+//                             alt={uni.universityName}
+//                             className="university-card-img"
+//                           />
+//                         </Col>
+//                         <Col md={8}>
+//                           <Card.Body>
+//                             <Card.Title>{uni.universityName}</Card.Title>
+//                             <Card.Text>
+//                               <strong>Location:</strong> {uni.location}
+//                             </Card.Text>
+//                           </Card.Body>
+//                         </Col>
+//                       </Row>
+//                     </Card>
+//                   </Col>
+//                 ))
+//               ) : (
+//                 <p className="no-results">No shortlisted universities yet.</p>
+//               )}
+//             </Row>
+//           )}
+//         </Col>
+//       </Row>
+//     </Container>
+//   );
+// };
+
+// export default UniversityList;
+
+// import React, { useState, useEffect } from "react";
+// import { Container, Row, Col, Card, Form, Button, Nav } from "react-bootstrap";
+// import "../designsAndCss/UniversityList.css";
+// import axios from "axios"; // Import axios for API calls
+
+// const UniversityList = () => {
+//   const [universities, setUniversities] = useState([]);
+//   const [shortlisted, setShortlisted] = useState([]);
+//   const [activeTab, setActiveTab] = useState("universities");
+//   const [filters, setFilters] = useState({
+//     country: "",
+//     state: "",
+//     program: "",
+//   });
+
+//   // Fetch universities from backend
+//   const fetchUniversities = async () => {
+//     try {
+//       const response = await axios.get(
+//         "http://localhost:8111/api/universities"
+//       );
+//       setUniversities(response.data); // Update state with API data
+//     } catch (error) {
+//       console.error("Error fetching universities:", error.message);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchUniversities();
+//   }, []);
+
+//   const handleFilterChange = (e) => {
+//     setFilters({ ...filters, [e.target.name]: e.target.value });
+//   };
+
+//   const handleShortlist = (university) => {
+//     if (!shortlisted.some((u) => u._id === university._id)) {
+//       setShortlisted([...shortlisted, university]);
+//     }
+//   };
+
+//   const filteredUniversities = universities.filter((uni) => {
+//     const { country, state, program } = filters;
+//     return (
+//       (!country || uni.location.includes(country)) &&
+//       (!state || uni.location.includes(state)) &&
+//       (!program || uni[program] === true)
+//     );
+//   });
+
+//   return (
+//     <Container className="university-list-page">
+//       <h1 className="page-title">Explore Top Universities Abroad</h1>
+//       <Nav
+//         variant="tabs"
+//         activeKey={activeTab}
+//         onSelect={(selectedKey) => setActiveTab(selectedKey)}
+//       >
+//         <Nav.Item>
+//           <Nav.Link eventKey="universities">Universities</Nav.Link>
+//         </Nav.Item>
+//         <Nav.Item>
+//           <Nav.Link eventKey="shortlisted">Shortlisted</Nav.Link>
+//         </Nav.Item>
+//       </Nav>
+
+//       {activeTab === "universities" && (
+//         <>
+//           <Form className="filter-form">
+//             <Row>
+//               <Col md={4}>
+//                 <Form.Group>
+//                   <Form.Label>Country</Form.Label>
+//                   <Form.Control
+//                     type="text"
+//                     name="country"
+//                     placeholder="Enter Country"
+//                     onChange={handleFilterChange}
+//                   />
+//                 </Form.Group>
+//               </Col>
+//               <Col md={4}>
+//                 <Form.Group>
+//                   <Form.Label>State</Form.Label>
+//                   <Form.Control
+//                     type="text"
+//                     name="state"
+//                     placeholder="Enter State"
+//                     onChange={handleFilterChange}
+//                   />
+//                 </Form.Group>
+//               </Col>
+//               <Col md={4}>
+//                 <Form.Group>
+//                   <Form.Label>Program</Form.Label>
+//                   <Form.Control
+//                     type="text"
+//                     name="program"
+//                     placeholder="Enter Program (e.g., engineering)"
+//                     onChange={handleFilterChange}
+//                   />
+//                 </Form.Group>
+//               </Col>
+//             </Row>
+//           </Form>
+
+//           <Row className="university-cards">
+//             {filteredUniversities.length > 0 ? (
+//               filteredUniversities.map((uni) => (
+//                 <Col md={12} key={uni._id} className="mb-4">
+//                   <Card className="university-card horizontal-card">
+//                     <Row className="no-gutters">
+//                       <Col md={4}>
+//                         <Card.Img
+//                           src={uni.image || "https://via.placeholder.com/150"}
+//                           alt={uni.universityName}
+//                           className="university-card-img"
+//                         />
+//                       </Col>
+//                       <Col md={8}>
+//                         <Card.Body>
+//                           <Card.Title>{uni.universityName}</Card.Title>
+//                           <Card.Text>
+//                             <strong>Website:</strong>{" "}
+//                             <a
+//                               href={uni.website}
+//                               target="_blank"
+//                               rel="noreferrer"
+//                             >
+//                               {uni.website}
+//                             </a>
+//                           </Card.Text>
+//                           <Card.Text>
+//                             <strong>Location:</strong> {uni.location}
+//                           </Card.Text>
+//                           <Card.Text>
+//                             <strong>Type:</strong>{" "}
+//                             {uni.privatePublic === "private"
+//                               ? "Private"
+//                               : "Public"}
+//                           </Card.Text>
+//                           <Card.Text>
+//                             <strong>Total Enrollment:</strong>{" "}
+//                             {uni.totalEnrollment}
+//                           </Card.Text>
+//                           <Card.Text>
+//                             <strong>Undergraduates:</strong>{" "}
+//                             {uni.undergraduates}
+//                           </Card.Text>
+//                           <Card.Text>
+//                             <strong>Male:</strong> {uni.male}%
+//                           </Card.Text>
+//                           <Card.Text>
+//                             <strong>Female:</strong> {uni.female}%
+//                           </Card.Text>
+//                           <Card.Text>
+//                             <strong>Financial Aid:</strong>{" "}
+//                             {uni.financialAid ? "Available" : "Not Available"}
+//                           </Card.Text>
+//                           <Card.Text>
+//                             <strong>Programs:</strong>{" "}
+//                             {Object.keys(uni)
+//                               .filter((key) => uni[key] === true)
+//                               .join(", ")}
+//                           </Card.Text>
+//                           <Button
+//                             variant="primary"
+//                             className="shortlist-btn"
+//                             onClick={() => handleShortlist(uni)}
+//                           >
+//                             Shortlist
+//                           </Button>
+//                         </Card.Body>
+//                       </Col>
+//                     </Row>
+//                   </Card>
+//                 </Col>
+//               ))
+//             ) : (
+//               <p className="no-results">
+//                 No universities match your search criteria.
+//               </p>
+//             )}
+//           </Row>
+//         </>
+//       )}
+
+//       {activeTab === "shortlisted" && (
+//         <Row className="university-cards">
+//           {shortlisted.length > 0 ? (
+//             shortlisted.map((uni) => (
+//               <Col md={12} key={uni._id} className="mb-4">
+//                 <Card className="university-card horizontal-card">
+//                   <Row className="no-gutters">
+//                     <Col md={4}>
+//                       <Card.Img
+//                         src={uni.image || "https://via.placeholder.com/150"}
+//                         alt={uni.universityName}
+//                         className="university-card-img"
+//                       />
+//                     </Col>
+//                     <Col md={8}>
+//                       <Card.Body>
+//                         <Card.Title>{uni.universityName}</Card.Title>
+//                         <Card.Text>
+//                           <strong>Location:</strong> {uni.location}
+//                         </Card.Text>
+//                         <Card.Text>
+//                           <strong>Programs:</strong>{" "}
+//                           {Object.keys(uni)
+//                             .filter((key) => uni[key] === true)
+//                             .join(", ")}
+//                         </Card.Text>
+//                       </Card.Body>
+//                     </Col>
+//                   </Row>
+//                 </Card>
+//               </Col>
+//             ))
+//           ) : (
+//             <p className="no-results">No shortlisted universities yet.</p>
+//           )}
+//         </Row>
+//       )}
+//     </Container>
+//   );
+// };
+
+// export default UniversityList;
 
 // import React, { useState, useEffect } from "react";
 // import { Container, Row, Col, Card, Form, Button, Nav } from "react-bootstrap";
