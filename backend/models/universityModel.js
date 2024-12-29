@@ -4,21 +4,45 @@ const UniversitySchema = new mongoose.Schema({
   universityName: { type: String, required: true },
   website: { type: String },
   location: { type: String },
+  country: { type: String },
   privatePublic: { type: String },
   totalEnrollment: { type: Number },
   undergraduates: { type: Number },
   male: { type: Number },
   female: { type: Number },
-  satErwMin: { type: String },
-  satErwMax: { type: String },
-  satMathMin: { type: String },
-  satMathMax: { type: String },
-  actMin: { type: String },
-  actMax: { type: String },
+  satErwMin: { type: Number },
+  satErwMax: { type: Number },
+  satMathMin: { type: Number },
+  satMathMax: { type: Number },
+  actMin: { type: Number },
+  actMax: { type: Number },
   financialAid: { type: Number },
   pellGrant: { type: Number },
-  expenseMin: { type: Number },
-  expenseMax: { type: Number },
+  expenseMin: {
+    type: Number,
+    set: (value) => {
+      // Strip non-numeric characters and convert to number
+      if (typeof value === "string") {
+        const numericValue = value.replace(/[^0-9.-]/g, "");
+        return isNaN(parseFloat(numericValue))
+          ? null
+          : parseFloat(numericValue);
+      }
+      return value;
+    },
+  },
+  expenseMax: {
+    type: Number,
+    set: (value) => {
+      if (typeof value === "string") {
+        const numericValue = value.replace(/[^0-9.-]/g, "");
+        return isNaN(parseFloat(numericValue))
+          ? null
+          : parseFloat(numericValue);
+      }
+      return value;
+    },
+  },
   studentLoans: { type: Number },
   averageDebt: { type: Number },
   applicants: { type: Number },
@@ -37,6 +61,46 @@ const UniversitySchema = new mongoose.Schema({
 const University = mongoose.model("University", UniversitySchema);
 
 export default University;
+
+// import mongoose from "mongoose";
+
+// const UniversitySchema = new mongoose.Schema({
+//   universityName: { type: String, required: true },
+//   website: { type: String },
+//   location: { type: String },
+//   privatePublic: { type: String },
+//   totalEnrollment: { type: Number },
+//   undergraduates: { type: Number },
+//   male: { type: Number },
+//   female: { type: Number },
+//   satErwMin: { type: String },
+//   satErwMax: { type: String },
+//   satMathMin: { type: String },
+//   satMathMax: { type: String },
+//   actMin: { type: String },
+//   actMax: { type: String },
+//   financialAid: { type: Number },
+//   pellGrant: { type: Number },
+//   expenseMin: { type: Number },
+//   expenseMax: { type: Number },
+//   studentLoans: { type: Number },
+//   averageDebt: { type: Number },
+//   applicants: { type: Number },
+//   accepted: { type: Number },
+//   enrolled: { type: Number },
+//   gradIn6Years: { type: Number },
+//   returningFreshmen: { type: Number },
+//   academics: { type: Number },
+//   social: { type: Number },
+//   qualityOfLife: { type: Number },
+//   phone: { type: String },
+//   email: { type: String },
+//   specialCourses: { type: [String], default: [] },
+// });
+
+// const University = mongoose.model("University", UniversitySchema);
+
+// export default University;
 
 // import mongoose from "mongoose";
 

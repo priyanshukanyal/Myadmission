@@ -2,14 +2,18 @@ import axios from "axios";
 
 // Base URL for API requests
 const API_URL = "http://localhost:8111/api";
+useEffect(() => {
+  const fetchAllUniversities = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8111/api/universities"
+      );
+      console.log(response.data); // Inspect the data to see if the fields exist
+      setUniversities(response.data);
+    } catch (error) {
+      console.error("Error fetching universities:", error.message);
+    }
+  };
 
-// Fetch all universities
-export const fetchAllUniversities = async () => {
-  try {
-    const response = await axios.get(`${API_URL}/universities`);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching universities:", error.message);
-    throw error; // Re-throw error for handling in the calling code
-  }
-};
+  fetchAllUniversities();
+}, []);
