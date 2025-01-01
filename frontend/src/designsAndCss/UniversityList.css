@@ -1,4 +1,4 @@
-/* UniversityList.css */
+/* UniversityList.css
 
 .university-list-page {
   padding: 20px;
@@ -88,4 +88,73 @@
 }
 .filter-form {
   margin-bottom: 20px;
+} */
+.university-list-page {
+  display: flex;
+  flex-wrap: nowrap;
+  background-color: #f8f9fa;
+}
+
+.filter-section {
+  padding: 20px;
+  background-color: #ffffff;
+  border-right: 1px solid #ddd;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.page-title {
+  text-align: center;
+  font-size: 2rem;
+  color: #343a40;
+}
+
+.university-cards {
+  margin-top: 20px;
+}
+
+.horizontal-card {
+  display: flex;
+  flex-direction: row;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.horizontal-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.university-card-img {
+  width: 100%;
+  height: auto;
+  border-radius: 5px 0 0 5px;
+}
+
+.shortlist-btn {
+  margin-top: 10px;
+  background-color: #007bff;
+  border: none;
+  font-size: 1rem;
+  padding: 8px 12px;
+}
+
+.shortlist-btn:hover {
+  background-color: #0056b3;
+}
+
+.filter-form {
+  margin-bottom: 20px;
+}
+
+.filter-form .form-control {
+  margin-bottom: 10px;
+}
+
+@media (min-width: 768px) {
+  .filter-form .form-control {
+    margin-bottom: 0;
+  }
 }
