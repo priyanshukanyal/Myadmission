@@ -1,160 +1,124 @@
-/* UniversityList.css
-
+/* General page styles */
 .university-list-page {
   padding: 20px;
-  background-color: #f8f9fa;
+  background-color: #f9f9f9;
 }
 
 .page-title {
-  text-align: center;
-  margin-bottom: 30px;
   font-size: 2rem;
-  color: #343a40;
+  font-weight: bold;
+  margin-bottom: 30px;
 }
 
-.filter-form {
-  margin-bottom: 20px;
-  padding: 10px;
-  background-color: #ffffff;
-  border: 1px solid #dee2e6;
-  border-radius: 5px;
+/* Filter and Cards Layout */
+.university-list-page .row {
+  display: flex;
+  flex-wrap: wrap;
 }
 
-.filter-form .form-control {
-  margin-bottom: 10px;
+.university-list-page .col-md-3 {
+  padding-right: 20px;
 }
 
-@media (min-width: 768px) {
-  .filter-form .form-control {
-    margin-bottom: 0;
-  }
+.university-list-page .col-md-9 {
+  padding-left: 20px;
+}
+
+.university-filter-wrapper {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
 .university-cards {
-  margin-top: 20px;
-}
-
-.horizontal-card {
   display: flex;
-  flex-direction: row;
-  border: 1px solid #dee2e6;
-  border-radius: 5px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
-.horizontal-card:hover {
-  transform: scale(1.02);
-  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.university-card-img {
-  height: 100%;
-  width: 150px;
-  object-fit: cover;
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
+/* University Card Styles */
+.university-card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
 .university-card .card-body {
   padding: 20px;
 }
 
-.university-card .card-title {
+.university-card .card-body .card-title {
   font-size: 1.5rem;
   font-weight: bold;
+  color: #333;
 }
 
-.university-card .card-text {
+.university-card .card-body .card-text {
   font-size: 1rem;
-  margin-bottom: 10px;
+  color: #555;
 }
 
-.shortlist-btn {
-  background-color: #007bff;
-  border: none;
-  font-size: 1rem;
-  padding: 8px 12px;
+.university-card .card-body .card-text strong {
+  color: #000;
 }
 
-.shortlist-btn:hover {
-  background-color: #0056b3;
-}
-.filter-section {
-  background-color: #f8f9fa;
-  padding: 20px;
-  border-right: 1px solid #ddd;
-  height: 100%;
-}
-.filter-form {
-  margin-bottom: 20px;
-} */
-.university-list-page {
-  display: flex;
-  flex-wrap: nowrap;
-  background-color: #f8f9fa;
-}
-
-.filter-section {
-  padding: 20px;
-  background-color: #ffffff;
-  border-right: 1px solid #ddd;
-  height: 100vh;
-  overflow-y: auto;
-}
-
-.page-title {
-  text-align: center;
-  font-size: 2rem;
-  color: #343a40;
-}
-
-.university-cards {
+.university-card .card-body .row {
   margin-top: 20px;
 }
 
-.horizontal-card {
-  display: flex;
-  flex-direction: row;
-  border: 1px solid #dee2e6;
-  border-radius: 5px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.horizontal-card:hover {
-  transform: scale(1.02);
-  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
-}
-
+/* Image on the left */
 .university-card-img {
   width: 100%;
-  height: auto;
-  border-radius: 5px 0 0 5px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px 0 0 10px;
 }
 
+/* Shortlist Button */
 .shortlist-btn {
-  margin-top: 10px;
   background-color: #007bff;
-  border: none;
+  color: white;
   font-size: 1rem;
-  padding: 8px 12px;
+  font-weight: bold;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
 }
 
 .shortlist-btn:hover {
   background-color: #0056b3;
 }
 
-.filter-form {
-  margin-bottom: 20px;
+/* No Results Message */
+.no-results {
+  font-size: 1.2rem;
+  color: #888;
+  margin-top: 20px;
+  text-align: center;
 }
 
-.filter-form .form-control {
-  margin-bottom: 10px;
-}
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .university-list-page .row {
+    flex-direction: column;
+  }
 
-@media (min-width: 768px) {
-  .filter-form .form-control {
-    margin-bottom: 0;
+  .university-filter-wrapper {
+    margin-bottom: 20px;
+  }
+
+  .university-card .card-body {
+    padding: 15px;
+  }
+
+  .university-card .card-body .row {
+    flex-direction: column;
+  }
+
+  .university-card-img {
+    height: 150px;
   }
 }

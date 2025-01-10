@@ -1,21 +1,26 @@
-/* UniversityFilter.css */
+/* Optimized UniversityFilter.css */
 
 /* General Form Styling */
 .filter-form {
   max-width: 500px;
+  min-width: 400px;
   margin: 20px auto;
+  margin-left: -200px;
   padding: 20px;
   background-color: #f8f9fa; /* Light gray background */
   border: 1px solid #dee2e6; /* Light border */
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  max-height: 800px;
 }
 
 /* Form Heading */
 .filter-form h4 {
   text-align: center;
   margin-bottom: 20px;
-  color: #343a40; /* Darker text color */
+  color: #343a40; /* Dark text color */
+  font-size: 1.25rem;
+  font-weight: bold;
 }
 
 /* Form Group Spacing */
@@ -27,6 +32,7 @@
 .filter-form .form-label {
   font-weight: 500;
   color: #495057;
+  font-size: 0.9rem;
 }
 
 /* Select and Input Styling */
@@ -34,27 +40,38 @@
 .filter-form .form-control {
   border-radius: 6px;
   border: 1px solid #ced4da;
-  padding: 8px;
-  font-size: 14px;
+  padding: 10px;
+  font-size: 0.9rem;
   color: #495057;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.filter-form .form-select:focus,
+.filter-form .form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.25);
+  outline: none;
 }
 
 /* Checkbox Styling */
 .filter-form .form-check-label {
-  font-size: 14px;
+  font-size: 0.9rem;
   color: #495057;
 }
 
 /* Buttons */
 .filter-form .btn {
-  width: 100%; /* Full width buttons for consistency */
+  width: 100%; /* Full-width buttons */
   padding: 10px;
-  font-size: 14px;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
 }
 
 .filter-form .btn-primary {
   background-color: #007bff;
   border-color: #007bff;
+  color: #fff;
 }
 
 .filter-form .btn-primary:hover {
@@ -66,6 +83,7 @@
   background-color: #6c757d;
   border-color: #6c757d;
   margin-top: 10px;
+  color: #fff;
 }
 
 .filter-form .btn-secondary:hover {
@@ -73,7 +91,7 @@
   border-color: #4e555b;
 }
 
-/* Media Query for Responsiveness */
+/* Responsiveness */
 @media (max-width: 768px) {
   .filter-form {
     width: 90%;
@@ -81,11 +99,11 @@
   }
 
   .filter-form h4 {
-    font-size: 18px;
+    font-size: 1.1rem;
   }
 
   .filter-form .btn {
-    font-size: 13px;
+    font-size: 0.85rem;
     padding: 8px;
   }
 }

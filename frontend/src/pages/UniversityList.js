@@ -1,29 +1,40 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card, Form, Button, Nav } from "react-bootstrap";
-import "../designsAndCss/UniversityList.css";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  ButtonGroup,
+} from "react-bootstrap";
+import { Link } from "react-router-dom"; // Import Link for routing
 import axios from "axios";
 import UniversityFilter from "../components/UniversityFilter.js";
 import UniversitySearch from "../components/UniversitySearch.js";
+import { useAuth } from "../components/generalComponents/authContext.js";
 
 const UniversityList = () => {
   const [universities, setUniversities] = useState([]);
   const [shortlisted, setShortlisted] = useState([]);
-  const [activeTab, setActiveTab] = useState("universities");
   const [filters, setFilters] = useState({});
-  // const [filteredUniversities, setFilteredUniversities] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [viewMode, setViewMode] = useState("list");
+  const { state } = useAuth();
+  const { token } = state;
+
+  const universitiesPerPage = 10;
 
   useEffect(() => {
     const fetchUniversities = async () => {
       try {
-        console.log("Fetching");
         setUniversities([]);
         const response = await axios.get(
-          "http://localhost:8111/api/universities",
+          "http://localhost:8111/api/Universities",
           {
             params:
               Object.keys(filters).length > 0
                 ? { filter: JSON.stringify(filters) }
-                : {}, // No filters if empty
+                : {},
           }
         );
         setUniversities(response.data);
@@ -32,8 +43,8 @@ const UniversityList = () => {
       }
     };
 
-    fetchUniversities(); // Always fetch, regardless of filters
-  }, [filters]); // Add filters as a dependency
+    fetchUniversities();
+  }, [filters]);
 
   const handleSearch = (universityName) => {
     setFilters((prevFilters) => ({
@@ -44,70 +55,123 @@ const UniversityList = () => {
 
   const handleShortlist = (university) => {
     if (!shortlisted.some((u) => u._id === university._id)) {
-      setShortlisted([...shortlisted, university]);
+      setShortlisted([...shortlisted, university]); // Add to shortlist
     }
   };
-  const handleRemoveShortlist = (universityId) => {
-    setShortlisted(shortlisted.filter((u) => u._id !== universityId));
+
+  const startIndex = (currentPage - 1) * universitiesPerPage;
+  const currentUniversities = universities.slice(
+    startIndex,
+    startIndex + universitiesPerPage
+  );
+
+  const handleNext = () => {
+    if (currentPage * universitiesPerPage < universities.length) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+  const handleApply = async (university) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8111/api/universities/apply",
+        { universityId: university._id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      alert(response.data.message);
+    } catch (error) {
+      alert(error.response?.data?.message || "Error applying for university.");
+    }
   };
 
   return (
     <Container className="university-list-page">
-      {/* <Nav
-        variant="tabs"
-        activeKey={activeTab}
-        onSelect={(selectedKey) => setActiveTab(selectedKey)}
-      >
-        <Nav.Item>
-          <Nav.Link eventKey="universities">Universities</Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link eventKey="shortlisted">Shortlisted</Nav.Link>
-        </Nav.Item>
-      </Nav> */}
-      <UniversityFilter
-        onApplyFilters={(filter) => {
-          console.log("filter1=>", filter);
-          setFilters((prevFilters) => ({
-            ...prevFilters,
-            ...filter, // Spread the filter to correctly merge it with previous filters
-          }));
-        }}
-      />
       <Row>
-        <h1 className="page-title">Explore Top Universities Abroad</h1>
-        <UniversitySearch
-          onSearch={(university) => {
-            handleSearch(university);
-          }}
-        />
-        <Row>
-          <Col md={9}>
-            {activeTab === "universities" && (
-              <Row className="university-cards">
-                {universities.length > 0 ? (
-                  universities.map((uni) => (
-                    <Col md={12} key={uni._id} className="mb-4">
-                      <Card className="university-card horizontal-card">
-                        <Row className="no-gutters">
-                          <Col md={4}>
-                            <Card.Img
-                              src={
-                                uni.image || "https://via.placeholder.com/150"
-                              }
-                              alt={uni.universityName}
-                              className="university-card-img"
-                            />
-                          </Col>
-                          <Col md={8}>
-                            <Card.Body>
-                              <Card.Title>{uni.universityName}</Card.Title>
+        <Col md={3} className="university-filter-wrapper mb-4">
+          <Card className="p-3 shadow-sm">
+            <UniversityFilter
+              onApplyFilters={(filter) => {
+                setFilters((prevFilters) => ({
+                  ...prevFilters,
+                  ...filter,
+                }));
+              }}
+            />
+          </Card>
+        </Col>
+        <Col md={9}>
+          <h1 className="page-title mb-4 text-primary">
+            Explore Top Universities Abroad
+          </h1>
+          <Card className="p-3 shadow-sm mb-4">
+            <UniversitySearch onSearch={handleSearch} />
+          </Card>
+
+          {/* View Mode Toggle Button */}
+          <ButtonGroup className="mb-4">
+            <Button
+              variant={viewMode === "list" ? "primary" : "outline-primary"}
+              onClick={() => setViewMode("list")}
+            >
+              List View
+            </Button>
+            <Button
+              variant={viewMode === "grid" ? "primary" : "outline-primary"}
+              onClick={() => setViewMode("grid")}
+            >
+              Grid View
+            </Button>
+          </ButtonGroup>
+
+          <Row className={viewMode === "grid" ? "g-4" : ""}>
+            {currentUniversities.length > 0 ? (
+              currentUniversities.map((uni) => (
+                <Col
+                  md={viewMode === "grid" ? 4 : 12}
+                  key={uni._id}
+                  className="mb-4"
+                >
+                  <Card
+                    className={`university-card shadow-sm border-0 ${
+                      viewMode === "grid" ? "h-100" : ""
+                    }`}
+                  >
+                    <Row className={viewMode === "list" ? "g-0" : ""}>
+                      <Col
+                        md={viewMode === "list" ? 4 : 12}
+                        className={
+                          viewMode === "list"
+                            ? "university-card-img-wrapper"
+                            : "text-center"
+                        }
+                      >
+                        <Card.Img
+                          src={
+                            uni.image || "https://via.placeholder.com/300x200"
+                          }
+                          alt={uni.universityName}
+                          className="university-card-img"
+                        />
+                      </Col>
+                      <Col md={viewMode === "list" ? 8 : 12}>
+                        <Card.Body>
+                          <Card.Title className="text-primary mb-3">
+                            {uni.universityName}
+                          </Card.Title>
+                          <Row>
+                            <Col md={6}>
                               <Card.Text>
                                 <strong>Website:</strong>{" "}
                                 <a
                                   href={uni.website}
                                   target="_blank"
                                   rel="noreferrer"
+                                  className="text-decoration-none"
                                 >
                                   {uni.website}
                                 </a>
@@ -121,6 +185,8 @@ const UniversityList = () => {
                               <Card.Text>
                                 <strong>Type:</strong> {uni.privatePublic}
                               </Card.Text>
+                            </Col>
+                            <Col md={6}>
                               <Card.Text>
                                 <strong>Total Enrollment:</strong>{" "}
                                 {uni.totalEnrollment}
@@ -135,219 +201,412 @@ const UniversityList = () => {
                               <Card.Text>
                                 <strong>Female:</strong> {uni.female}%
                               </Card.Text>
-                              <Card.Text>
-                                <strong>SAT ERW Range:</strong> {uni.satErwMin}{" "}
-                                - {uni.satErwMax}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>SAT Math Range:</strong>{" "}
-                                {uni.satMathMin} - {uni.satMathMax}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>ACT Range:</strong> {uni.actMin} -{" "}
-                                {uni.actMax}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Financial Aid:</strong>{" "}
-                                {uni.financialAid}%
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Pell Grant:</strong> {uni.pellGrant}%
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Expense Range:</strong> $
-                                {uni.expenseMin} - ${uni.expenseMax}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Student Loans:</strong>{" "}
-                                {uni.studentLoans}%
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Average Debt:</strong> {uni.averageDebt}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Applicants:</strong> {uni.applicants}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Accepted:</strong> {uni.accepted}%
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Enrolled:</strong> {uni.enrolled}%
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Graduation in 6 Years:</strong>{" "}
-                                {uni.gradIn6Years}%
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Returning Freshmen:</strong>{" "}
-                                {uni.returningFreshmen}%
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Academics:</strong> {uni.academics}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Social:</strong> {uni.social}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Quality of Life:</strong>{" "}
-                                {uni.qualityOfLife}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Admissions Phone:</strong> {uni.phone}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Email Address:</strong> {uni.email}
-                              </Card.Text>
+                            </Col>
+                          </Row>
+                          <div className="d-flex justify-content-start mt-3">
+                            <Button
+                              variant="primary"
+                              onClick={() => handleShortlist(uni)}
+                              disabled={shortlisted.some(
+                                (u) => u._id === uni._id
+                              )}
+                              className="me-2"
+                            >
+                              {shortlisted.some((u) => u._id === uni._id)
+                                ? "Shortlisted"
+                                : "Shortlist"}
+                            </Button>
 
-                              <Button
-                                variant="primary"
-                                className="shortlist-btn"
-                                onClick={() => handleShortlist(uni)}
-                              >
-                                Shortlist
-                              </Button>
-                            </Card.Body>
-                          </Col>
-                        </Row>
-                      </Card>
-                    </Col>
-                  ))
-                ) : (
-                  <p className="no-results">
-                    No universities match your search criteria.
-                  </p>
-                )}
-              </Row>
-            )}
-
-            {activeTab === "shortlisted" && (
-              <Row className="university-cards">
-                {shortlisted.length > 0 ? (
-                  shortlisted.map((uni) => (
-                    <Col md={12} key={uni._id} className="mb-4">
-                      <Card className="university-card horizontal-card">
-                        <Row className="no-gutters">
-                          <Col md={4}>
-                            <Card.Img
-                              src={
-                                uni.image || "https://via.placeholder.com/150"
+                            <Link
+                              to={`/university/${uni._id}`}
+                              className="btn btn-outline-primary me-2"
+                            >
+                              View Details
+                            </Link>
+                            <a
+                              onClick={() => handleApply(uni)}
+                              href={
+                                uni.website.startsWith("http")
+                                  ? uni.website
+                                  : `https://${uni.website}`
                               }
-                              alt={uni.universityName}
-                              className="university-card-img"
-                            />
-                          </Col>
-                          <Col md={8}>
-                            <Card.Body>
-                              <Card.Title>{uni.universityName}</Card.Title>
-                              <Card.Text>
-                                <strong>Website:</strong>{" "}
-                                <a
-                                  href={uni.website}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                >
-                                  {uni.website}
-                                </a>
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Location:</strong> {uni.location}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Type:</strong> {uni.privatePublic}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Total Enrollment:</strong>{" "}
-                                {uni.totalEnrollment}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Undergraduates:</strong>{" "}
-                                {uni.undergraduates}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Male:</strong> {uni.male}%
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Female:</strong> {uni.female}%
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>SAT ERW Range:</strong> {uni.satErwMin}{" "}
-                                - {uni.satErwMax}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>SAT Math Range:</strong>{" "}
-                                {uni.satMathMin} - {uni.satMathMax}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>ACT Range:</strong> {uni.actMin} -{" "}
-                                {uni.actMax}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Financial Aid:</strong>{" "}
-                                {uni.financialAid}%
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Pell Grant:</strong> {uni.pellGrant}%
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Expense Range:</strong> $
-                                {uni.expenseMin} - ${uni.expenseMax}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Student Loans:</strong>{" "}
-                                {uni.studentLoans}%
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Average Debt:</strong> {uni.averageDebt}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Applicants:</strong> {uni.applicants}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Accepted:</strong> {uni.accepted}%
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Enrolled:</strong> {uni.enrolled}%
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Graduation in 6 Years:</strong>{" "}
-                                {uni.gradIn6Years}%
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Returning Freshmen:</strong>{" "}
-                                {uni.returningFreshmen}%
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Academics:</strong> {uni.academics}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Social:</strong> {uni.social}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Quality of Life:</strong>{" "}
-                                {uni.qualityOfLife}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Admissions Phone:</strong> {uni.phone}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Email Address:</strong> {uni.email}
-                              </Card.Text>
-                            </Card.Body>
-                          </Col>
-                        </Row>
-                      </Card>
-                    </Col>
-                  ))
-                ) : (
-                  <p className="no-results">No shortlisted universities yet.</p>
-                )}
-              </Row>
+                              target="_blank"
+                              rel="noreferrer"
+                              className="btn btn-secondary"
+                            >
+                              Apply
+                            </a>
+                          </div>
+                        </Card.Body>
+                      </Col>
+                    </Row>
+                  </Card>
+                </Col>
+              ))
+            ) : (
+              <p className="text-center text-muted">
+                No universities match your search criteria.
+              </p>
             )}
-          </Col>
-        </Row>
+          </Row>
+
+          <div className="pagination-buttons text-center mt-4">
+            <Button
+              variant="secondary"
+              onClick={handlePrevious}
+              disabled={currentPage === 1}
+              className="me-2"
+            >
+              Previous
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={handleNext}
+              disabled={
+                currentPage * universitiesPerPage >= universities.length
+              }
+            >
+              Next
+            </Button>
+          </div>
+        </Col>
       </Row>
     </Container>
   );
 };
 
 export default UniversityList;
+//   return (
+//     <Container className="university-list-page">
+//       <Row>
+//         <Col md={3} className="university-filter-wrapper mb-4">
+//           <Card className="p-3 shadow-sm">
+//             <UniversityFilter
+//               onApplyFilters={(filter) => {
+//                 setFilters((prevFilters) => ({
+//                   ...prevFilters,
+//                   ...filter,
+//                 }));
+//               }}
+//             />
+//           </Card>
+//         </Col>
+//         <Col md={9}>
+//           <h1 className="page-title mb-4 text-primary">
+//             Explore Top Universities Abroad
+//           </h1>
+//           <Card className="p-3 shadow-sm mb-4">
+//             <UniversitySearch onSearch={handleSearch} />
+//           </Card>
+//           <Row className="university-cards">
+//             {currentUniversities.length > 0 ? (
+//               currentUniversities.map((uni) => (
+//                 <Col md={12} key={uni._id} className="mb-4">
+//                   <Card className="university-card shadow-sm border-0">
+//                     <Row className="g-0">
+//                       <Col md={4} className="university-card-img-wrapper">
+//                         <Card.Img
+//                           src={
+//                             uni.image || "https://via.placeholder.com/300x200"
+//                           }
+//                           alt={uni.universityName}
+//                           className="university-card-img"
+//                         />
+//                       </Col>
+//                       <Col md={8}>
+//                         <Card.Body>
+//                           <Card.Title className="text-primary mb-3">
+//                             {uni.universityName}
+//                           </Card.Title>
+//                           <Row>
+//                             <Col md={6}>
+//                               <Card.Text>
+//                                 <strong>Website:</strong>{" "}
+//                                 <a
+//                                   href={uni.website}
+//                                   target="_blank"
+//                                   rel="noreferrer"
+//                                   className="text-decoration-none"
+//                                 >
+//                                   {uni.website}
+//                                 </a>
+//                               </Card.Text>
+//                               <Card.Text>
+//                                 <strong>Location:</strong> {uni.location}
+//                               </Card.Text>
+//                               <Card.Text>
+//                                 <strong>Country:</strong> {uni.country}
+//                               </Card.Text>
+//                               <Card.Text>
+//                                 <strong>Type:</strong> {uni.privatePublic}
+//                               </Card.Text>
+//                             </Col>
+//                             <Col md={6}>
+//                               <Card.Text>
+//                                 <strong>Total Enrollment:</strong>{" "}
+//                                 {uni.totalEnrollment}
+//                               </Card.Text>
+//                               <Card.Text>
+//                                 <strong>Undergraduates:</strong>{" "}
+//                                 {uni.undergraduates}
+//                               </Card.Text>
+//                               <Card.Text>
+//                                 <strong>Male:</strong> {uni.male}%
+//                               </Card.Text>
+//                               <Card.Text>
+//                                 <strong>Female:</strong> {uni.female}%
+//                               </Card.Text>
+//                             </Col>
+//                           </Row>
+//                           <div className="d-flex justify-content-start mt-3">
+//                             <Button
+//                               variant="primary"
+//                               onClick={() => handleShortlist(uni)}
+//                               disabled={shortlisted.some(
+//                                 (u) => u._id === uni._id
+//                               )}
+//                               className="me-2"
+//                             >
+//                               {shortlisted.some((u) => u._id === uni._id)
+//                                 ? "Shortlisted"
+//                                 : "Shortlist"}
+//                             </Button>
+
+//                             <Link
+//                               to={`/university/${uni._id}`}
+//                               className="btn btn-outline-primary me-2"
+//                             >
+//                               View Details
+//                             </Link>
+//                             <a
+//                               href={uni.website}
+//                               target="_blank"
+//                               rel="noreferrer"
+//                               className="btn btn-secondary"
+//                             >
+//                               Apply
+//                             </a>
+//                           </div>
+//                         </Card.Body>
+//                       </Col>
+//                     </Row>
+//                   </Card>
+//                 </Col>
+//               ))
+//             ) : (
+//               <p className="text-center text-muted">
+//                 No universities match your search criteria.
+//               </p>
+//             )}
+//           </Row>
+//           <div className="pagination-buttons text-center mt-4">
+//             <Button
+//               variant="secondary"
+//               onClick={handlePrevious}
+//               disabled={currentPage === 1}
+//               className="me-2"
+//             >
+//               Previous
+//             </Button>
+//             <Button
+//               variant="secondary"
+//               onClick={handleNext}
+//               disabled={
+//                 currentPage * universitiesPerPage >= universities.length
+//               }
+//             >
+//               Next
+//             </Button>
+//           </div>
+//         </Col>
+//       </Row>
+//     </Container>
+//   );
+// };
+
+// export default UniversityList;
+
+// import React, { useState, useEffect } from "react";
+// import { Container, Row, Col, Card, Button } from "react-bootstrap";
+// import axios from "axios";
+// import UniversityFilter from "../components/UniversityFilter.js";
+// import UniversitySearch from "../components/UniversitySearch.js";
+
+// const UniversityList = () => {
+//   const [universities, setUniversities] = useState([]);
+//   const [shortlisted, setShortlisted] = useState([]);
+//   const [filters, setFilters] = useState({});
+//   const [currentPage, setCurrentPage] = useState(1); // Track the current page
+
+//   const universitiesPerPage = 10; // Number of universities to show per page
+
+//   useEffect(() => {
+//     const fetchUniversities = async () => {
+//       try {
+//         setUniversities([]);
+//         const response = await axios.get(
+//           "http://localhost:8111/api/universities",
+//           {
+//             params:
+//               Object.keys(filters).length > 0
+//                 ? { filter: JSON.stringify(filters) }
+//                 : {},
+//           }
+//         );
+//         setUniversities(response.data);
+//       } catch (error) {
+//         console.error("Error fetching universities:", error.message);
+//       }
+//     };
+
+//     fetchUniversities(); // Always fetch, regardless of filters
+//   }, [filters]);
+
+//   const handleSearch = (universityName) => {
+//     setFilters((prevFilters) => ({
+//       ...prevFilters,
+//       universityName,
+//     }));
+//   };
+
+//   const handleShortlist = (university) => {
+//     if (!shortlisted.some((u) => u._id === university._id)) {
+//       setShortlisted([...shortlisted, university]);
+//     }
+//   };
+
+//   // Calculate the universities to display based on the current page
+//   const startIndex = (currentPage - 1) * universitiesPerPage;
+//   const currentUniversities = universities.slice(
+//     startIndex,
+//     startIndex + universitiesPerPage
+//   );
+
+//   const handleNext = () => {
+//     if (currentPage * universitiesPerPage < universities.length) {
+//       setCurrentPage(currentPage + 1);
+//     }
+//   };
+
+//   const handlePrevious = () => {
+//     if (currentPage > 1) {
+//       setCurrentPage(currentPage - 1);
+//     }
+//   };
+
+//   return (
+//     <Container className="university-list-page">
+//       <Row>
+//         <Col md={3}>
+//           <div className="university-filter-wrapper">
+//             <UniversityFilter
+//               onApplyFilters={(filter) => {
+//                 setFilters((prevFilters) => ({
+//                   ...prevFilters,
+//                   ...filter,
+//                 }));
+//               }}
+//             />
+//           </div>
+//         </Col>
+//         <Col md={9}>
+//           <h1 className="page-title">Explore Top Universities Abroad</h1>
+//           <UniversitySearch onSearch={handleSearch} />
+//           <Row className="university-cards">
+//             {currentUniversities.length > 0 ? (
+//               currentUniversities.map((uni) => (
+//                 <Col md={12} key={uni._id} className="mb-4">
+//                   <Card className="university-card">
+//                     <Row className="no-gutters">
+//                       <Col md={4}>
+//                         <Card.Img
+//                           src={uni.image || "https://via.placeholder.com/150"}
+//                           alt={uni.universityName}
+//                           className="university-card-img"
+//                         />
+//                       </Col>
+//                       <Col md={8}>
+//                         <Card.Body>
+//                           <Card.Title>{uni.universityName}</Card.Title>
+//                           <Row>
+//                             <Col md={6}>
+//                               <Card.Text>
+//                                 <strong>Website:</strong>{" "}
+//                                 <a
+//                                   href={uni.website}
+//                                   target="_blank"
+//                                   rel="noreferrer"
+//                                 >
+//                                   {uni.website}
+//                                 </a>
+//                               </Card.Text>
+//                               <Card.Text>
+//                                 <strong>Location:</strong> {uni.location}
+//                               </Card.Text>
+//                               <Card.Text>
+//                                 <strong>Country:</strong> {uni.country}
+//                               </Card.Text>
+//                               <Card.Text>
+//                                 <strong>Type:</strong> {uni.privatePublic}
+//                               </Card.Text>
+//                             </Col>
+//                             <Col md={6}>
+//                               <Card.Text>
+//                                 <strong>Total Enrollment:</strong>{" "}
+//                                 {uni.totalEnrollment}
+//                               </Card.Text>
+//                               <Card.Text>
+//                                 <strong>Undergraduates:</strong>{" "}
+//                                 {uni.undergraduates}
+//                               </Card.Text>
+//                               <Card.Text>
+//                                 <strong>Male:</strong> {uni.male}%
+//                               </Card.Text>
+//                               <Card.Text>
+//                                 <strong>Female:</strong> {uni.female}%
+//                               </Card.Text>
+//                             </Col>
+//                           </Row>
+//                           <Button
+//                             variant="primary"
+//                             onClick={() => handleShortlist(uni)}
+//                           >
+//                             Shortlist
+//                           </Button>
+//                         </Card.Body>
+//                       </Col>
+//                     </Row>
+//                   </Card>
+//                 </Col>
+//               ))
+//             ) : (
+//               <p className="no-results">
+//                 No universities match your search criteria.
+//               </p>
+//             )}
+//           </Row>
+//           <div className="pagination-buttons">
+//             <Button
+//               variant="secondary"
+//               onClick={handlePrevious}
+//               disabled={currentPage === 1}
+//             >
+//               Previous
+//             </Button>
+//             <Button
+//               variant="secondary"
+//               onClick={handleNext}
+//               disabled={
+//                 currentPage * universitiesPerPage >= universities.length
+//               }
+//             >
+//               Next
+//             </Button>
+//           </div>
+//         </Col>
+//       </Row>
+//     </Container>
+//   );
+// };
+
+// export default UniversityList;

@@ -6,7 +6,6 @@ export const getAllUniversities = async (req, res) => {
     // Parse the filter object from query parameters
     const filter = req.query.filter ? JSON.parse(req.query.filter) : {};
     // Initialize a filter object for MongoDB
-    console.log("filter==><", filter);
     const mongoFilters = {};
 
     // Apply filters conditionally
@@ -34,9 +33,9 @@ export const getAllUniversities = async (req, res) => {
       mongoFilters.privatePublic = filter.universityType;
     }
 
-    // if (filter.expense) {
-    //   mongoFilters.expenseMin = { $lte: parseInt(filter.expense, 10) };
-    // }
+    if (filter.expense) {
+      mongoFilters.expenseMin = { $lte: parseInt(filter.expense, 10) };
+    }
 
     if (filter.universityName) {
       mongoFilters.universityName = {
