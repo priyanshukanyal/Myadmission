@@ -1,7 +1,15 @@
-import React, { useEffect } from "react";
-import { Navbar, Nav, Container, Button } from "react-bootstrap";
+import React from "react";
+import {
+  Navbar,
+  Nav,
+  Container,
+  Button,
+  NavDropdown,
+  Image,
+} from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../components/generalComponents/authContext";
+import logo from "../assets/logo.png"; // Make sure your logo path is correct
 
 const Header = () => {
   const { state, logout } = useAuth();
@@ -15,43 +23,70 @@ const Header = () => {
   };
 
   return (
-    <Navbar bg="light" expand="md" className="shadow-sm">
+    <Navbar bg="white" expand="md" className="shadow-sm py-2" sticky="top">
       <Container>
-        <Navbar.Brand as={Link} to="/" className="fw-bold text-primary">
-          MyAdmission
+        {/* Logo and Brand */}
+        <Navbar.Brand
+          as={Link}
+          to="/"
+          className="d-flex align-items-center fw-bold text-primary"
+        >
+          <Image
+            src={logo}
+            alt="MyAdmission Logo"
+            width={40}
+            height={40}
+            roundedCircle
+            className="me-2"
+          />
+          <span>MyAdmission</span>
         </Navbar.Brand>
+
+        {/* Navbar Toggle for Mobile */}
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
+
+        {/* Navbar Links */}
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link as={Link} to="/universities">
+            <Nav.Link as={Link} to="/universities" className="fw-semibold">
               Universities
             </Nav.Link>
-            <Nav.Link as={Link} to="/shortlisted">
+            <Nav.Link as={Link} to="/shortlisted" className="fw-semibold">
               Shortlisted
             </Nav.Link>
-            <Nav.Link as={Link} to="/contact">
+            <Nav.Link as={Link} to="/contact" className="fw-semibold">
               Contact Us
             </Nav.Link>
-            <Nav.Link as={Link} to="/applied">
+            <Nav.Link as={Link} to="/applied" className="fw-semibold">
               Applied
             </Nav.Link>
           </Nav>
+
+          {/* Profile and Auth Section */}
           <Nav className="ms-auto">
             {token ? (
-              <>
-                <Navbar.Text className="me-2">
-                  Signed in as: {user?.name || "Loading..."}
-                </Navbar.Text>
-                <Button
-                  variant="outline-danger"
-                  size="sm"
-                  onClick={handleLogout}
-                >
+              <NavDropdown
+                title={`Welcome, ${user?.name || "User"}`}
+                id="user-dropdown"
+                align="end"
+                className="fw-semibold"
+              >
+                <NavDropdown.Item as={Link} to="/profile">
+                  Update Profile
+                </NavDropdown.Item>
+                <NavDropdown.Divider />
+                <NavDropdown.Item onClick={handleLogout}>
                   Logout
-                </Button>
-              </>
+                </NavDropdown.Item>
+              </NavDropdown>
             ) : (
-              <Button as={Link} to="/onboarding" variant="primary" size="sm">
+              <Button
+                as={Link}
+                to="/onboarding"
+                variant="primary"
+                size="sm"
+                className="fw-semibold"
+              >
                 Login / Register
               </Button>
             )}
@@ -63,6 +98,72 @@ const Header = () => {
 };
 
 export default Header;
+
+// import React, { useEffect } from "react";
+// import { Navbar, Nav, Container, Button } from "react-bootstrap";
+// import { Link, useNavigate } from "react-router-dom";
+// import { useAuth } from "../components/generalComponents/authContext";
+
+// const Header = () => {
+//   const { state, logout } = useAuth();
+//   const { token, user } = state;
+//   const navigate = useNavigate();
+
+//   const handleLogout = () => {
+//     logout();
+//     navigate("/");
+//     window.location.reload();
+//   };
+
+//   return (
+//     <Navbar bg="light" expand="md" className="shadow-sm">
+//       <Container>
+//         <Navbar.Brand as={Link} to="/" className="fw-bold text-primary">
+//           MyAdmission
+//         </Navbar.Brand>
+//         <Navbar.Toggle aria-controls="basic-navbar-nav" />
+//         <Navbar.Collapse id="basic-navbar-nav">
+//           <Nav className="me-auto">
+//             <Nav.Link as={Link} to="/universities">
+//               Universities
+//             </Nav.Link>
+//             <Nav.Link as={Link} to="/shortlisted">
+//               Shortlisted
+//             </Nav.Link>
+//             <Nav.Link as={Link} to="/contact">
+//               Contact Us
+//             </Nav.Link>
+//             <Nav.Link as={Link} to="/applied">
+//               Applied
+//             </Nav.Link>
+//           </Nav>
+//           <Nav className="ms-auto">
+//             {token ? (
+//               <>
+//                 <Navbar.Text className="me-2">
+//                   Signed in as: {user?.name || "Loading..."}
+//                 </Navbar.Text>
+//                 <Button
+//                   variant="outline-danger"
+//                   size="sm"
+//                   onClick={handleLogout}
+//                 >
+//                   Logout
+//                 </Button>
+//               </>
+//             ) : (
+//               <Button as={Link} to="/onboarding" variant="primary" size="sm">
+//                 Login / Register
+//               </Button>
+//             )}
+//           </Nav>
+//         </Navbar.Collapse>
+//       </Container>
+//     </Navbar>
+//   );
+// };
+
+// export default Header;
 
 // import React, { useEffect } from "react";
 // import "bootstrap/dist/css/bootstrap.min.css";

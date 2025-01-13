@@ -12,6 +12,10 @@ import StaticFooter from "./components/StaticFooter.js";
 import UniversityDetail from "./pages/UniversityDetail.js";
 import ShortlistedUniversities from "./pages/Shortlisted.js";
 import Applied from "./pages/applied.js";
+import Shortlisted from "./pages/Shortlisted.js";
+import FAQ from "./pages/FAQ.js";
+import Scholarships from "./pages/Scholarships.js";
+import StudentProfile from "./components/StudentProfile.js";
 
 function App() {
   // State to store shortlisted universities
@@ -34,8 +38,12 @@ function App() {
             }
           />
           <Route path="/contact" element={<ContactForm />} />
+          <Route path="/shortlisted" element={<Shortlisted />} />
           <Route path="/applied" element={<Applied />} />
           <Route path="/university/:id" element={<UniversityDetail />} />
+          <Route path="/profile" element={<StudentProfile />} />
+          <Route path="/FAQ" element={<FAQ />} />
+          <Route path="/scholarships" element={<Scholarships />} />
           <Route
             path="/shortlisted"
             element={

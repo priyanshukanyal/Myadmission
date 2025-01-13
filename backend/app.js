@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import cors from "cors"; // Import CORS
 import universityRoutes from "./routes/universityRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import studentProfileRoutes from "./routes/studentProfileRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -29,6 +30,7 @@ mongoose
 // Routes
 app.use("/api/universities", universityRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api", studentProfileRoutes);
 
 // Start the server
 app.listen(PORT, () => {

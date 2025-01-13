@@ -28,7 +28,7 @@ const StaticFooter = () => {
               <a href="/scholarships">Scholarships</a>
             </li>
             <li>
-              <a href="/contact-us">Contact Us</a>
+              <a href="/FAQ">FAQ</a>
             </li>
           </ul>
         </div>
@@ -36,8 +36,8 @@ const StaticFooter = () => {
         <div className="footer-section contact">
           <h4>Contact Us</h4>
           <p>Email: support@myadmission.com</p>
-          <p>Phone: +1-234-567-8900</p>
-          <p>Address: 123 College Road, Academic City</p>
+          <p>Phone: +91-9625278110</p>
+          <p>Address: 902 Unitech Arcadia, South city-2 gurugram, Haryana</p>
         </div>
       </div>
 

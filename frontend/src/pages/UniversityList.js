@@ -12,15 +12,16 @@ import axios from "axios";
 import UniversityFilter from "../components/UniversityFilter.js";
 import UniversitySearch from "../components/UniversitySearch.js";
 import { useAuth } from "../components/generalComponents/authContext.js";
+import useShortlist from "../hooks/useShortlist.js";
 
 const UniversityList = () => {
   const [universities, setUniversities] = useState([]);
-  const [shortlisted, setShortlisted] = useState([]);
   const [filters, setFilters] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState("list");
   const { state } = useAuth();
   const { token } = state;
+  const { shortlisted, addShortlist } = useShortlist();
 
   const universitiesPerPage = 10;
 
@@ -46,6 +47,29 @@ const UniversityList = () => {
     fetchUniversities();
   }, [filters]);
 
+  useEffect(() => {
+    const fetchShortlisted = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8111/api/universities/shortlisted",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        addShortlist(response.data);
+      } catch (error) {
+        console.error(
+          "Error fetching shortlisted universities:",
+          error.message
+        );
+      }
+    };
+
+    if (token) {
+      fetchShortlisted();
+    }
+  }, [token]);
+
   const handleSearch = (universityName) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
@@ -53,9 +77,15 @@ const UniversityList = () => {
     }));
   };
 
-  const handleShortlist = (university) => {
-    if (!shortlisted.some((u) => u._id === university._id)) {
-      setShortlisted([...shortlisted, university]); // Add to shortlist
+  const handleShortlist = async (university) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8111/api/universities/shortlist",
+        { universityId: university._id }, // Pass universityId in the body
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } catch (error) {
+      console.error("Error shortlisting university:", error);
     }
   };
 
@@ -83,7 +113,6 @@ const UniversityList = () => {
         { universityId: university._id },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      alert(response.data.message);
     } catch (error) {
       alert(error.response?.data?.message || "Error applying for university.");
     }

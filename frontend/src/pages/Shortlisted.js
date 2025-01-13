@@ -1,107 +1,107 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useAuth } from "../components/generalComponents/authContext";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
 
-const ShortlistedUniversities = ({ shortlisted, setShortlisted }) => {
-  const handleRemove = (universityId) => {
-    const updatedList = shortlisted.filter((uni) => uni._id !== universityId);
-    setShortlisted(updatedList); // This updates the shortlist
+const Shortlisted = () => {
+  const [shortlisted, setShortlisted] = useState([]);
+  const { state } = useAuth();
+  const { token } = state;
+
+  // Fetch shortlisted universities
+  useEffect(() => {
+    const fetchShortlistedUniversities = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8111/api/universities/shortlisted",
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setShortlisted(response.data);
+      } catch (error) {
+        console.error("Error fetching shortlisted universities:", error);
+      }
+    };
+
+    if (token) fetchShortlistedUniversities();
+  }, [token]);
+
+  // Handle adding a university to the shortlist
+  const handleAddShortlist = async (universityId) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8111/api/universities/shortlist",
+        { universityId }, // Ensure this matches the expected body
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      console.log("Successfully added to shortlist:", response.data);
+    } catch (error) {
+      console.error(
+        "Error adding to shortlist:",
+        error.response ? error.response.data : error.message
+      );
+    }
+  };
+
+  // Handle removing a university from the shortlist
+  const handleRemoveShortlist = async (universityId) => {
+    try {
+      console.log("Attempting to delete:", universityId);
+      const response = await axios.delete(
+        `http://localhost:8111/api/universities/shortlist/${universityId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      console.log("Successfully removed from shortlist:", response.data);
+      setShortlisted((prevShortlist) =>
+        prevShortlist.filter((uni) => uni.university._id !== universityId)
+      );
+    } catch (error) {
+      console.error(
+        "Error removing shortlisted university:",
+        error.response ? error.response.data : error.message
+      );
+    }
   };
 
   return (
-    <Container className="shortlisted-page">
-      <h1 className="page-title mb-4 text-primary">Shortlisted Universities</h1>
-      {shortlisted.length > 0 ? (
-        <Row className="university-cards">
-          {shortlisted.map((uni) => (
-            <Col md={12} key={uni._id} className="mb-4">
-              <Card className="university-card shadow-sm border-0">
-                <Row className="g-0">
-                  <Col md={4} className="university-card-img-wrapper">
-                    <Card.Img
-                      src={uni.image || "https://via.placeholder.com/300x200"}
-                      alt={uni.universityName}
-                      className="university-card-img"
-                    />
-                  </Col>
-                  <Col md={8}>
-                    <Card.Body>
-                      <Card.Title className="text-primary mb-3">
-                        {uni.universityName}
-                      </Card.Title>
-                      <Row>
-                        <Col md={6}>
-                          <Card.Text>
-                            <strong>Website:</strong>{" "}
-                            <a
-                              href={uni.website}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-decoration-none"
-                            >
-                              {uni.website}
-                            </a>
-                          </Card.Text>
-                          <Card.Text>
-                            <strong>Location:</strong> {uni.location}
-                          </Card.Text>
-                          <Card.Text>
-                            <strong>Country:</strong> {uni.country}
-                          </Card.Text>
-                        </Col>
-                        <Col md={6}>
-                          <Card.Text>
-                            <strong>Total Enrollment:</strong>{" "}
-                            {uni.totalEnrollment}
-                          </Card.Text>
-                          <Card.Text>
-                            <strong>Undergraduates:</strong>{" "}
-                            {uni.undergraduates}
-                          </Card.Text>
-                        </Col>
-                      </Row>
-                      <div className="d-flex justify-content-start mt-3">
-                        <Button
-                          variant="danger"
-                          onClick={() => handleRemove(uni._id)}
-                          className="me-2"
-                        >
-                          Remove
-                        </Button>
-                        <Link
-                          to={`/university/${uni._id}`}
-                          className="btn btn-outline-primary me-2"
-                        >
-                          View Details
-                        </Link>
-                        <a
-                          href={uni.website}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="btn btn-secondary"
-                        >
-                          Apply
-                        </a>
-                      </div>
-                    </Card.Body>
-                  </Col>
-                </Row>
+    <Container className="shortlisted-list-page">
+      <h1 className="page-title mb-4 text-primary">
+        My Shortlisted Universities
+      </h1>
+      <Row>
+        {shortlisted.length > 0 ? (
+          shortlisted.map((uni) => (
+            <Col md={4} key={uni._id} className="mb-4">
+              <Card className="shadow-sm">
+                <Card.Img
+                  variant="top"
+                  src={uni.image || "https://via.placeholder.com/300x200"}
+                  alt={uni.university.universityName}
+                />
+                <Card.Body>
+                  <Card.Title className="text-primary">
+                    {uni.university.universityName}
+                  </Card.Title>
+                  <Card.Text>
+                    <strong>Location:</strong> {uni.university.location}
+                  </Card.Text>
+                  <Button
+                    variant="danger"
+                    onClick={() => handleRemoveShortlist(uni.university._id)}
+                  >
+                    Remove
+                  </Button>
+                </Card.Body>
               </Card>
             </Col>
-          ))}
-        </Row>
-      ) : (
-        <p className="text-center text-muted">
-          You have not shortlisted any universities yet.
-        </p>
-      )}
-      <div className="text-center mt-4">
-        <Link to="/Universities" className="btn btn-primary">
-          Back to University List
-        </Link>
-      </div>
+          ))
+        ) : (
+          <p className="text-center text-muted">
+            No shortlisted universities found.
+          </p>
+        )}
+      </Row>
     </Container>
   );
 };
 
-export default ShortlistedUniversities;
+export default Shortlisted;

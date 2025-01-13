@@ -19,6 +19,7 @@ const Applied = () => {
           },
         }
       );
+      console.log(response.data);
       setAppliedUniversities(response.data);
     } catch (error) {
       console.error("Error fetching applied universities:", error);
@@ -38,8 +39,10 @@ const Applied = () => {
             <Col key={uni._id} md={4} className="mb-4">
               <Card>
                 <Card.Body>
-                  <Card.Title>{uni.universityName}</Card.Title>
-                  <Card.Text>Location: {uni.location}</Card.Text>
+                  <Card.Title>
+                    University Name: {uni.university.universityName}
+                  </Card.Title>
+                  <Card.Text>Location: {uni.university.location}</Card.Text>
                 </Card.Body>
               </Card>
             </Col>

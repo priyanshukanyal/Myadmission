@@ -56,7 +56,7 @@ const UniversitySearch = ({ onSearch }) => {
           type="submit"
           style={{ padding: "10px 20px", marginLeft: "5px" }}
         >
-          Submit
+          Search
         </button>
       </form>
       {loading && <p>Loading...</p>}
