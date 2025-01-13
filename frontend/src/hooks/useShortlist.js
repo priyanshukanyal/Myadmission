@@ -34,7 +34,7 @@ const useShortlist = () => {
     try {
       const response = await axios.post(
         "http://localhost:8111/api/universities/shortlist",
-        { universityId: university._id },
+        { universityId: university._id }, // Ensure university._id exists
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setShortlisted((prev) => [...prev, university]);

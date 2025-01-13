@@ -5,7 +5,7 @@ const UniversityComparison = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [universityList, setUniversityList] = useState([]);
   const [selectedUniversities, setSelectedUniversities] = useState([]);
-  const [setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Fetch university names based on search query
   const fetchUniversities = async (query) => {

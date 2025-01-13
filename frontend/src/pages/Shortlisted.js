@@ -26,21 +26,21 @@ const Shortlisted = () => {
   }, [token]);
 
   // Handle adding a university to the shortlist
-  const handleAddShortlist = async (universityId) => {
-    try {
-      const response = await axios.post(
-        "http://localhost:8111/api/universities/shortlist",
-        { universityId }, // Ensure this matches the expected body
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      console.log("Successfully added to shortlist:", response.data);
-    } catch (error) {
-      console.error(
-        "Error adding to shortlist:",
-        error.response ? error.response.data : error.message
-      );
-    }
-  };
+  // const handleAddShortlist = async (universityId) => {
+  //   try {
+  //     const response = await axios.post(
+  //       "http://localhost:8111/api/universities/shortlist",
+  //       { universityId }, // Ensure this matches the expected body
+  //       { headers: { Authorization: `Bearer ${token}` } }
+  //     );
+  //     console.log("Successfully added to shortlist:", response.data);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error adding to shortlist:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  // };
 
   // Handle removing a university from the shortlist
   const handleRemoveShortlist = async (universityId) => {
