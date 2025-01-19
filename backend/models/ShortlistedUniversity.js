@@ -1,4 +1,3 @@
-// backend/models/ShortlistedUniversity.js
 import mongoose from "mongoose";
 
 const shortlistedUniversitySchema = new mongoose.Schema(
@@ -21,5 +20,4 @@ const ShortlistedUniversity = mongoose.model(
   "ShortlistedUniversity",
   shortlistedUniversitySchema
 );
-
 export default ShortlistedUniversity;

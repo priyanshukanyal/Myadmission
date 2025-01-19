@@ -7,15 +7,25 @@ import {
   deleteUniversity,
 } from "../controllers/universityControllers.js";
 
-import { getUniversityNames } from "../controllers/universityControllers.js";
+import {
+  getUniversityNames,
+  addToShortlist,
+  getShortlistedUniversities,
+  removeFromShortlist,
+} from "../controllers/universityControllers.js";
 import protect from "../middleware/authMiddleware.js";
 import ShortlistedUniversity from "../models/ShortlistedUniversity.js";
 import AppliedUniversity from "../models/AppliedUniversity.js";
 
 const router = Router();
-
+router.post("/shortlist", protect, addToShortlist);
+router.get("/shortlisted", protect, getShortlistedUniversities);
+router.delete("/shortlist/:id", protect, removeFromShortlist);
 // Route to get all universities
 router.get("/", getAllUniversities);
+router.post("/shortlist", protect, addToShortlist);
+router.get("/shortlisted", protect, getShortlistedUniversities);
+router.delete("/shortlist/:id", protect, removeFromShortlist);
 
 // Route to get a specific university by ID
 // Route to create a new university

@@ -1,10 +1,20 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../components/generalComponents/authContext";
-import { Container, Row, Col, Card, Button } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Spinner,
+  Alert,
+} from "react-bootstrap";
 
 const Shortlisted = () => {
   const [shortlisted, setShortlisted] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { state } = useAuth();
   const { token } = state;
 
@@ -12,93 +22,103 @@ const Shortlisted = () => {
   useEffect(() => {
     const fetchShortlistedUniversities = async () => {
       try {
+        setIsLoading(true);
         const response = await axios.get(
           "http://localhost:8111/api/universities/shortlisted",
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setShortlisted(response.data);
       } catch (error) {
-        console.error("Error fetching shortlisted universities:", error);
+        setError(
+          error.response?.data?.message ||
+            "Failed to fetch shortlisted universities."
+        );
+      } finally {
+        setIsLoading(false);
       }
     };
 
     if (token) fetchShortlistedUniversities();
   }, [token]);
 
-  // Handle adding a university to the shortlist
-  // const handleAddShortlist = async (universityId) => {
-  //   try {
-  //     const response = await axios.post(
-  //       "http://localhost:8111/api/universities/shortlist",
-  //       { universityId }, // Ensure this matches the expected body
-  //       { headers: { Authorization: `Bearer ${token}` } }
-  //     );
-  //     console.log("Successfully added to shortlist:", response.data);
-  //   } catch (error) {
-  //     console.error(
-  //       "Error adding to shortlist:",
-  //       error.response ? error.response.data : error.message
-  //     );
-  //   }
-  // };
-
-  // Handle removing a university from the shortlist
   const handleRemoveShortlist = async (universityId) => {
     try {
-      console.log("Attempting to delete:", universityId);
       const response = await axios.delete(
         `http://localhost:8111/api/universities/shortlist/${universityId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
+
       console.log("Successfully removed from shortlist:", response.data);
+
       setShortlisted((prevShortlist) =>
-        prevShortlist.filter((uni) => uni.university._id !== universityId)
+        prevShortlist.filter((uni) => uni.university?._id !== universityId)
       );
     } catch (error) {
       console.error(
         "Error removing shortlisted university:",
-        error.response ? error.response.data : error.message
+        error.response?.data || error.message
       );
+      setError("Failed to remove the university. Please try again.");
     }
   };
 
+  // Render
   return (
     <Container className="shortlisted-list-page">
       <h1 className="page-title mb-4 text-primary">
         My Shortlisted Universities
       </h1>
+
+      {isLoading && (
+        <div className="text-center my-5">
+          <Spinner animation="border" variant="primary" />
+        </div>
+      )}
+
+      {error && (
+        <Alert variant="danger" onClose={() => setError(null)} dismissible>
+          {error}
+        </Alert>
+      )}
+
+      {!isLoading && shortlisted.length === 0 && !error && (
+        <p className="text-center text-muted">
+          No shortlisted universities found.
+        </p>
+      )}
+
       <Row>
-        {shortlisted.length > 0 ? (
-          shortlisted.map((uni) => (
-            <Col md={4} key={uni._id} className="mb-4">
+        {shortlisted.map(({ university, _id }) => {
+          if (!university) return null; // Skip if university data is missing
+
+          return (
+            <Col md={4} key={_id} className="mb-4">
               <Card className="shadow-sm">
                 <Card.Img
                   variant="top"
-                  src={uni.image || "https://via.placeholder.com/300x200"}
-                  alt={uni.university.universityName}
+                  src={
+                    university.image || "https://via.placeholder.com/300x200"
+                  }
+                  alt={university.universityName || "Unknown University"}
                 />
                 <Card.Body>
                   <Card.Title className="text-primary">
-                    {uni.university.universityName}
+                    {university.universityName || "Unknown University"}
                   </Card.Title>
                   <Card.Text>
-                    <strong>Location:</strong> {uni.university.location}
+                    <strong>Location:</strong> {university.location || "N/A"}
                   </Card.Text>
                   <Button
                     variant="danger"
-                    onClick={() => handleRemoveShortlist(uni.university._id)}
+                    onClick={() => handleRemoveShortlist(university._id)}
                   >
                     Remove
                   </Button>
                 </Card.Body>
               </Card>
             </Col>
-          ))
-        ) : (
-          <p className="text-center text-muted">
-            No shortlisted universities found.
-          </p>
-        )}
+          );
+        })}
       </Row>
     </Container>
   );

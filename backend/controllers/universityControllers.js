@@ -1,4 +1,87 @@
 import University from "../models/universityModel.js";
+import ShortlistedUniversity from "../models/ShortlistedUniversity.js";
+
+export const addToShortlist = async (req, res) => {
+  try {
+    const { universityId } = req.body;
+    const userId = req.user?._id;
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized. Please log in." });
+    }
+
+    if (!universityId) {
+      return res.status(400).json({ message: "University ID is required." });
+    }
+
+    const existingShortlist = await ShortlistedUniversity.findOne({
+      user: userId,
+      university: universityId,
+    });
+    if (existingShortlist) {
+      return res.status(400).json({ message: "Already shortlisted." });
+    }
+
+    const newShortlist = new ShortlistedUniversity({
+      user: userId,
+      university: universityId,
+    });
+    await newShortlist.save();
+
+    res.status(201).json({ message: "University shortlisted successfully." });
+  } catch (error) {
+    console.error("Error adding to shortlist:", error);
+    res.status(500).json({ message: "Internal Server Error." });
+  }
+};
+
+export const getShortlistedUniversities = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const shortlisted = await ShortlistedUniversity.find({
+      user: userId,
+    }).populate({
+      path: "university",
+      select: "universityName location image", // Ensure required fields are fetched
+    });
+
+    if (!shortlisted.length) {
+      return res.status(200).json([]);
+    }
+
+    res.status(200).json(shortlisted);
+  } catch (error) {
+    console.error("Error fetching shortlisted universities:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const removeFromShortlist = async (req, res) => {
+  try {
+    const userId = req.user?._id;
+    const { id } = req.params;
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized. Please log in." });
+    }
+
+    const result = await ShortlistedUniversity.findOneAndDelete({
+      user: userId,
+      university: id,
+    });
+
+    if (!result) {
+      return res
+        .status(404)
+        .json({ message: "University not found in shortlist." });
+    }
+
+    res.status(200).json({ message: "University removed from shortlist." });
+  } catch (error) {
+    console.error("Error removing shortlisted university:", error);
+    res.status(500).json({ message: "Internal Server Error." });
+  }
+};
 
 // Get all universities
 export const getAllUniversities = async (req, res) => {
@@ -132,3 +215,68 @@ export const getUniversityNames = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+// export const addToShortlist = async (req, res) => {
+//   try {
+//     const { universityId } = req.body;
+//     const userId = req.user._id;
+
+//     if (!universityId) {
+//       return res.status(400).json({ message: "University ID is required." });
+//     }
+
+//     const existingShortlist = await ShortlistedUniversity.findOne({
+//       user: userId,
+//       university: universityId,
+//     });
+//     if (existingShortlist) {
+//       return res.status(400).json({ message: "Already shortlisted." });
+//     }
+
+//     const newShortlist = new ShortlistedUniversity({
+//       user: userId,
+//       university: universityId,
+//     });
+//     await newShortlist.save();
+
+//     res.status(201).json({ message: "University shortlisted successfully." });
+//   } catch (error) {
+//     console.error("Error adding to shortlist:", error);
+//     res.status(500).json({ message: "Internal Server Error." });
+//   }
+// };
+
+// export const getShortlistedUniversities = async (req, res) => {
+//   try {
+//     const userId = req.user._id;
+//     const shortlisted = await ShortlistedUniversity.find({
+//       user: userId,
+//     }).populate("university");
+//     res.status(200).json(shortlisted);
+//   } catch (error) {
+//     console.error("Error fetching shortlisted universities:", error);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// };
+
+// export const removeFromShortlist = async (req, res) => {
+//   try {
+//     const userId = req.user._id;
+//     const { id } = req.params;
+
+//     const result = await ShortlistedUniversity.findOneAndDelete({
+//       user: userId,
+//       university: id,
+//     });
+
+//     if (!result) {
+//       return res
+//         .status(404)
+//         .json({ message: "University not found in shortlist." });
+//     }
+
+//     res.status(200).json({ message: "University removed from shortlist." });
+//   } catch (error) {
+//     console.error("Error removing shortlisted university:", error);
+//     res.status(500).json({ message: "Internal Server Error." });
+//   }
+// };
