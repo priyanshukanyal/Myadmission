@@ -19,30 +19,8 @@ const UniversitySchema = new mongoose.Schema(
     actMax: { type: Number },
     financialAid: { type: Number },
     pellGrant: { type: Number },
-    expenseMin: {
-      type: Number,
-      set: (value) => {
-        if (typeof value === "string") {
-          const numericValue = value.replace(/[^0-9.-]/g, "");
-          return isNaN(parseFloat(numericValue))
-            ? null
-            : parseFloat(numericValue);
-        }
-        return value;
-      },
-    },
-    expenseMax: {
-      type: Number,
-      set: (value) => {
-        if (typeof value === "string") {
-          const numericValue = value.replace(/[^0-9.-]/g, "");
-          return isNaN(parseFloat(numericValue))
-            ? null
-            : parseFloat(numericValue);
-        }
-        return value;
-      },
-    },
+    expenseMin: { type: Number },
+    expenseMax: { type: Number },
     studentLoans: { type: Number },
     averageDebt: { type: Number },
     applicants: { type: Number },

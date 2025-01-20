@@ -18,6 +18,11 @@ const cleanNumber = (value) => {
   return isNaN(parseFloat(value)) ? null : parseFloat(value);
 };
 
+// Convert string to boolean
+const cleanBoolean = (value) => {
+  return ["yes", "YES", "Yes", true].includes(value);
+};
+
 // Read Excel data and insert into MongoDB
 const importExcelData = async (filePath) => {
   try {
@@ -35,46 +40,10 @@ const importExcelData = async (filePath) => {
     console.log("Headers extracted:", headers);
 
     // Programs from "Accounting" to "Writing"
-    const programsList = [
-      "Accounting",
-      "Agriculture",
-      "Anthropology",
-      "Architecture",
-      "Art",
-      "Astronomy",
-      "Biology",
-      "Business",
-      "Chemistry",
-      "Communications",
-      "Computer Science",
-      "Criminal Justice",
-      "Dance",
-      "Economics",
-      "Education",
-      "Engineering",
-      "English",
-      "Environmental Science",
-      "Film",
-      "Geography",
-      "History",
-      "Hospitality",
-      "Humanities",
-      "International Studies",
-      "Journalism",
-      "Law",
-      "Liberal Arts",
-      "Mathematics",
-      "Medicine",
-      "Music",
-      "Nursing",
-      "Philosophy",
-      "Physics",
-      "Political Science",
-      "Psychology",
-      "Sociology",
-      "Theater",
-      "Writing",
-    ];
+    const programsList = headers.slice(
+      headers.indexOf("accounting"),
+      headers.indexOf("writing") + 1
+    );
 
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
@@ -98,14 +67,12 @@ const importExcelData = async (filePath) => {
           universityData[header] = cleanNumber(value);
         } else if (header === "financialAid" || header === "pellGrant") {
           universityData[header] = cleanNumber(value); // Store as a number
-        } else if (header === "isIVY") {
-          universityData[header] =
-            value === "YES" || value === "Yes" || value === "yes"; // Set true/false based on value
-        } else if (
-          programsList.includes(header) &&
-          (value === "YES" || value === "Yes" || value === "yes")
-        ) {
+        } else if (header === "isIvy") {
+          universityData[header] = cleanBoolean(value); // Set true/false based on value
+        } else if (programsList.includes(header) && cleanBoolean(value)) {
           universityData.programs[header] = true; // Add program fields with YES value
+        } else if (programsList.includes(header)) {
+          universityData.programs[header] = false; // Default to false for programs
         } else {
           universityData[header] = cleanNumber(value) || value;
         }
