@@ -6,10 +6,12 @@ import {
   Card,
   Button,
   ButtonGroup,
+  Dropdown,
+  DropdownButton,
 } from "react-bootstrap";
-import { Link } from "react-router-dom"; // Import Link for routing
+import { Link } from "react-router-dom";
 import axios from "axios";
-import UniversityFilter from "../components/UniversityFilter.js";
+import UniversityFilter from "../components/universityFilter.js";
 import UniversitySearch from "../components/UniversitySearch.js";
 import { useAuth } from "../components/generalComponents/authContext.js";
 import useShortlist from "../hooks/useShortlist.js";
@@ -19,6 +21,7 @@ const UniversityList = () => {
   const [filters, setFilters] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState("list");
+  const [sortCriteria, setSortCriteria] = useState("ranking"); // Default sorting by ranking
   const { state } = useAuth();
   const { token } = state;
   const { shortlisted, addShortlist } = useShortlist();
@@ -28,7 +31,7 @@ const UniversityList = () => {
   useEffect(() => {
     const fetchUniversities = async () => {
       try {
-        setUniversities([]);
+        setUniversities([]); // Clear the universities before fetching
         const response = await axios.get(
           "http://localhost:8111/api/Universities",
           {
@@ -81,7 +84,7 @@ const UniversityList = () => {
     try {
       const response = await axios.post(
         "http://localhost:8111/api/universities/shortlist",
-        { universityId: university._id }, // Pass universityId in the body
+        { universityId: university._id },
         { headers: { Authorization: `Bearer ${token}` } }
       );
     } catch (error) {
@@ -106,6 +109,7 @@ const UniversityList = () => {
       setCurrentPage(currentPage - 1);
     }
   };
+
   const handleApply = async (university) => {
     try {
       const response = await axios.post(
@@ -117,6 +121,26 @@ const UniversityList = () => {
       alert(error.response?.data?.message || "Error applying for university.");
     }
   };
+
+  const sortUniversities = (criteria) => {
+    return [...universities].sort((a, b) => {
+      if (criteria === "fees") {
+        return a.fees - b.fees;
+      } else if (criteria === "placement") {
+        return b.placement - a.placement;
+      } else if (criteria === "ranking") {
+        return a.ranking - b.ranking;
+      }
+      return 0;
+    });
+  };
+
+  const handleSortChange = (newSortCriteria) => {
+    setSortCriteria(newSortCriteria);
+  };
+
+  // Sort the universities based on the selected sort criteria
+  const sortedUniversities = sortUniversities(sortCriteria);
 
   return (
     <Container className="university-list-page">
@@ -141,6 +165,20 @@ const UniversityList = () => {
             <UniversitySearch onSearch={handleSearch} />
           </Card>
 
+          {/* Sorting Dropdown */}
+          <DropdownButton
+            variant="outline-primary"
+            title={`Sort by ${
+              sortCriteria.charAt(0).toUpperCase() + sortCriteria.slice(1)
+            }`}
+            className="mb-4"
+            onSelect={handleSortChange}
+          >
+            <Dropdown.Item eventKey="ranking">Ranking</Dropdown.Item>
+            <Dropdown.Item eventKey="fees">Fees</Dropdown.Item>
+            <Dropdown.Item eventKey="placement">Placement</Dropdown.Item>
+          </DropdownButton>
+
           {/* View Mode Toggle Button */}
           <ButtonGroup className="mb-4">
             <Button
@@ -159,119 +197,126 @@ const UniversityList = () => {
 
           <Row className={viewMode === "grid" ? "g-4" : ""}>
             {currentUniversities.length > 0 ? (
-              currentUniversities.map((uni) => (
-                <Col
-                  md={viewMode === "grid" ? 4 : 12}
-                  key={uni._id}
-                  className="mb-4"
-                >
-                  <Card
-                    className={`university-card shadow-sm border-0 ${
-                      viewMode === "grid" ? "h-100" : ""
-                    }`}
+              sortedUniversities
+                .slice(startIndex, startIndex + universitiesPerPage)
+                .map((uni) => (
+                  <Col
+                    md={viewMode === "grid" ? 4 : 12}
+                    key={uni._id}
+                    className="mb-4"
                   >
-                    <Row className={viewMode === "list" ? "g-0" : ""}>
-                      <Col
-                        md={viewMode === "list" ? 4 : 12}
-                        className={
-                          viewMode === "list"
-                            ? "university-card-img-wrapper"
-                            : "text-center"
-                        }
-                      >
-                        <Card.Img
-                          src={
-                            uni.image || "https://via.placeholder.com/300x200"
+                    <Card
+                      className={`university-card shadow-sm border-0 ${
+                        viewMode === "grid" ? "h-100" : ""
+                      }`}
+                    >
+                      <Row className={viewMode === "list" ? "g-0" : ""}>
+                        <Col
+                          md={viewMode === "list" ? 4 : 12}
+                          className={
+                            viewMode === "list"
+                              ? "university-card-img-wrapper"
+                              : "text-center"
                           }
-                          alt={uni.universityName}
-                          className="university-card-img"
-                        />
-                      </Col>
-                      <Col md={viewMode === "list" ? 8 : 12}>
-                        <Card.Body>
-                          <Card.Title className="text-primary mb-3">
-                            {uni.universityName}
-                          </Card.Title>
-                          <Row>
-                            <Col md={6}>
-                              <Card.Text>
-                                <strong>Website:</strong>{" "}
-                                <a
-                                  href={uni.website}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="text-decoration-none"
-                                >
-                                  {uni.website}
-                                </a>
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Location:</strong> {uni.location}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Country:</strong> {uni.country}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Type:</strong> {uni.privatePublic}
-                              </Card.Text>
-                            </Col>
-                            <Col md={6}>
-                              <Card.Text>
-                                <strong>Total Enrollment:</strong>{" "}
-                                {uni.totalEnrollment}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Undergraduates:</strong>{" "}
-                                {uni.undergraduates}
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Male:</strong> {uni.male}%
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Female:</strong> {uni.female}%
-                              </Card.Text>
-                            </Col>
-                          </Row>
-                          <div className="d-flex justify-content-start mt-3">
-                            <Button
-                              variant="primary"
-                              onClick={() => handleShortlist(uni)}
-                              disabled={shortlisted.some(
-                                (u) => u._id === uni._id
-                              )}
-                              className="me-2"
-                            >
-                              {shortlisted.some((u) => u._id === uni._id)
-                                ? "Shortlisted"
-                                : "Shortlist"}
-                            </Button>
+                        >
+                          <Card.Img
+                            src={
+                              uni.image || "https://via.placeholder.com/300x200"
+                            }
+                            alt={uni.universityName}
+                            className="university-card-img"
+                          />
+                        </Col>
+                        <Col md={viewMode === "list" ? 8 : 12}>
+                          <Card.Body>
+                            <Card.Title className="text-primary mb-3">
+                              {uni.universityName}
+                            </Card.Title>
+                            <Row>
+                              <Col md={6}>
+                                <Card.Text>
+                                  <strong>Website:</strong>{" "}
+                                  <a
+                                    href={uni.website}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-decoration-none"
+                                  >
+                                    {uni.website}
+                                  </a>
+                                </Card.Text>
+                                <Card.Text>
+                                  <strong>Location:</strong> {uni.location}
+                                </Card.Text>
+                                <Card.Text>
+                                  <strong>Country:</strong> {uni.country}
+                                </Card.Text>
+                                <Card.Text>
+                                  <strong>Fees</strong> ${uni.fees}
+                                </Card.Text>
+                              </Col>
+                              <Col md={6}>
+                                <Card.Text>
+                                  <strong>Ranking:</strong> {uni.ranking}
+                                </Card.Text>
+                                <Card.Text>
+                                  <strong>Undergraduates:</strong>{" "}
+                                  {uni.undergraduates}
+                                </Card.Text>
+                                <Card.Text>
+                                  <strong>Male:</strong> {uni.male}%
+                                </Card.Text>
+                                <Card.Text>
+                                  <strong>Female:</strong> {uni.female}%
+                                </Card.Text>
+                                <Card.Text>
+                                  <strong>Placement:</strong> {uni.placement}%
+                                </Card.Text>
+                                <Card.Text>
+                                  <strong>Ivy:</strong> {uni.isIvy}
+                                </Card.Text>
+                              </Col>
+                            </Row>
+                            <div className="d-flex justify-content-start mt-3">
+                              <Button
+                                variant="primary"
+                                onClick={() => handleShortlist(uni)}
+                                disabled={shortlisted.some(
+                                  (u) => u._id === uni._id
+                                )}
+                                className="me-2"
+                              >
+                                {shortlisted.some((u) => u._id === uni._id)
+                                  ? "Shortlisted"
+                                  : "Shortlist"}
+                              </Button>
 
-                            <Link
-                              to={`/university/${uni._id}`}
-                              className="btn btn-outline-primary me-2"
-                            >
-                              View Details
-                            </Link>
-                            <a
-                              onClick={() => handleApply(uni)}
-                              href={
-                                uni.website.startsWith("http")
-                                  ? uni.website
-                                  : `https://${uni.website}`
-                              }
-                              target="_blank"
-                              rel="noreferrer"
-                              className="btn btn-secondary"
-                            >
-                              Apply
-                            </a>
-                          </div>
-                        </Card.Body>
-                      </Col>
-                    </Row>
-                  </Card>
-                </Col>
-              ))
+                              <Link
+                                to={`/university/${uni._id}`}
+                                className="btn btn-outline-primary me-2"
+                              >
+                                View Details
+                              </Link>
+                              <a
+                                onClick={() => handleApply(uni)}
+                                href={
+                                  uni.website.startsWith("http")
+                                    ? uni.website
+                                    : `https://${uni.website}`
+                                }
+                                target="_blank"
+                                rel="noreferrer"
+                                className="btn btn-secondary"
+                              >
+                                Apply
+                              </a>
+                            </div>
+                          </Card.Body>
+                        </Col>
+                      </Row>
+                    </Card>
+                  </Col>
+                ))
             ) : (
               <p className="text-center text-muted">
                 No universities match your search criteria.
@@ -305,6 +350,7 @@ const UniversityList = () => {
 };
 
 export default UniversityList;
+
 //   return (
 //     <Container className="university-list-page">
 //       <Row>
