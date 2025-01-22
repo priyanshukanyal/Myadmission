@@ -33,7 +33,7 @@ const UniversitySchema = new mongoose.Schema(
     qualityOfLife: { type: Number },
     admissionsPhone: { type: String, trim: true, default: null },
     emailAddress: { type: String, trim: true, lowercase: true, default: null },
-    isIvy: { type: Boolean, default: false },
+    isIvy: { type: String },
     placement: { type: Number },
     ranking: { type: Number },
     fees: { type: Number },

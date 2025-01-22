@@ -68,7 +68,7 @@ const importExcelData = async (filePath) => {
         } else if (header === "financialAid" || header === "pellGrant") {
           universityData[header] = cleanNumber(value); // Store as a number
         } else if (header === "isIvy") {
-          universityData[header] = cleanBoolean(value); // Set true/false based on value
+          universityData[header] = value ? value.trim() : null; // Store as a string
         } else if (programsList.includes(header) && cleanBoolean(value)) {
           universityData.programs[header] = true; // Add program fields with YES value
         } else if (programsList.includes(header)) {
