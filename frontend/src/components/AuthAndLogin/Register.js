@@ -1,45 +1,62 @@
 import React, { useState } from "react";
 import { Form, Button, Alert, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { registerUser } from "../../api/userApi"; // Assuming the API functions are in 'api.js'
+import { registerUser } from "../../api/userApi";
+import { useAuth } from "../../components/generalComponents/authContext";
 
 const Register = () => {
   const [userData, setUserData] = useState({
     name: "",
     email: "",
     password: "",
+    role: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    // Basic form validation
     if (!userData.name || !userData.email || !userData.password) {
       setError("Please fill in all fields");
       return;
     }
 
-    setLoading(true); // Show loading spinner while registering
+    if (userData.password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      return;
+    }
+
+    setLoading(true);
     try {
-      const data = await registerUser(userData);
-      window.localStorage.setItem("token", data.token);
-      window.localStorage.setItem("user", JSON.stringify(data));
-      setUserData({ name: "", email: "", password: "" });
-      setError(""); // Clear previous errors
-      navigate("/"); // Redirect to homepage
+      // Register the user, without overwriting the role since it's "Guest" by default
+      const data = await registerUser({ ...userData });
+
+      // Log the response to inspect if data is correct
+      console.log(data);
+
+      if (data?.role) {
+        login(data.token, data); // Passing the entire response, including role
+        if (data.role === "Admin" || data.role === "Super Admin") {
+          navigate("/admin-dashboard");
+        } else {
+          navigate("/");
+        }
+      } else {
+        setError("Registration failed: Missing user data or role.");
+      }
     } catch (err) {
       setError("Registration failed: " + err.message);
     } finally {
-      setLoading(false); // Hide loading spinner after request completion
+      setLoading(false);
     }
   };
 
   const togglePasswordVisibility = () => {
-    setPasswordVisible((prevState) => !prevState);
+    setPasswordVisible((prev) => !prev);
   };
 
   return (
@@ -87,7 +104,6 @@ const Register = () => {
               variant="link"
               onClick={togglePasswordVisibility}
               className="ml-2"
-              style={{ alignSelf: "center" }}
             >
               {passwordVisible ? "Hide" : "Show"}
             </Button>

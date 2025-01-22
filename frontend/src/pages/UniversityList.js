@@ -286,7 +286,7 @@ const UniversityList = () => {
                             <strong>Fees: </strong>$ {uni.fees}
                           </p>
                           <p>
-                            <strong>Fees in INR: </strong>₹ {uni.fees * 86.58}
+                            <strong>Fees in INR: </strong>₹ {uni.fees * 86.5}
                           </p>
                           <p>
                             <strong>Is IVY: </strong>

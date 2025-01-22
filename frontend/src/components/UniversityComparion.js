@@ -151,7 +151,8 @@ const UniversityComparison = () => {
               <td>Popular Courses</td>
               {selectedUniversities.map((uni) => (
                 <td key={uni._id}>
-                  {Array.isArray(uni.specialCourses)
+                  {Array.isArray(uni.specialCourses) &&
+                  uni.specialCourses.length
                     ? uni.specialCourses.join(", ")
                     : "N/A"}
                 </td>

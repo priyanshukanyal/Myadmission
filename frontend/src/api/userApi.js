@@ -12,9 +12,14 @@ export const loginUser = async (email, password) => {
   return response.data;
 };
 
-// 2. Register User
+// 2. Register User with a default role (if not provided)
 export const registerUser = async (userData) => {
-  const response = await axios.post(`${API_URL}/users/register`, userData);
+  // Add default role if not provided
+  const userWithRole = { ...userData, role: userData.role || "Guest" };
+
+  const response = await axios.post(`${API_URL}/users/register`, userWithRole, {
+    headers: { "Content-Type": "application/json" },
+  });
   return response.data;
 };
 

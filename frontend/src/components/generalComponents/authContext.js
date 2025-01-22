@@ -1,9 +1,20 @@
 import React, { createContext, useReducer, useContext } from "react";
 
+// Safe function to parse JSON from localStorage
+const getUserFromLocalStorage = () => {
+  try {
+    return JSON.parse(localStorage.getItem("user")) || null;
+  } catch (error) {
+    console.error("Invalid user data in localStorage. Clearing storage...");
+    localStorage.removeItem("user");
+    return null;
+  }
+};
+
 // Initial state
 const initialState = {
   token: localStorage.getItem("token") || null,
-  user: JSON.parse(localStorage.getItem("user")) || null,
+  user: getUserFromLocalStorage(),
   isLoggedIn: !!localStorage.getItem("token"),
 };
 
@@ -47,14 +58,19 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: LOGOUT });
   };
 
+  // Role-based access control
+  const userRole = state.user?.role || "Guest";
+  const isAdmin = userRole === "Admin" || userRole === "Super Admin";
+
+  // Function to check if a user has a specific role
+  const hasRole = (roles) => roles.includes(userRole);
+
   return (
-    <AuthContext.Provider value={{ state, login, logout }}>
+    <AuthContext.Provider value={{ state, login, logout, isAdmin, hasRole }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
 // Custom hook to use auth context
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);

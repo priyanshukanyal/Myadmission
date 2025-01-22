@@ -9,10 +9,10 @@ import {
 } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../components/generalComponents/authContext";
-import logo from "../assets/logo.png"; // Make sure your logo path is correct
+import logo from "../assets/logo.png"; // Ensure logo path is correct
 
 const Header = () => {
-  const { state, logout } = useAuth();
+  const { state, logout, isAdmin } = useAuth();
   const { token, user } = state;
   const navigate = useNavigate();
 
@@ -60,6 +60,15 @@ const Header = () => {
             <Nav.Link as={Link} to="/applied" className="fw-semibold">
               Applied
             </Nav.Link>
+            {isAdmin && (
+              <Nav.Link
+                as={Link}
+                to="/admin"
+                className="fw-semibold text-danger"
+              >
+                Admin Panel
+              </Nav.Link>
+            )}
           </Nav>
 
           {/* Profile and Auth Section */}
@@ -74,6 +83,11 @@ const Header = () => {
                 <NavDropdown.Item as={Link} to="/profile">
                   Update Profile
                 </NavDropdown.Item>
+                {isAdmin && (
+                  <NavDropdown.Item as={Link} to="/admin-data">
+                    Admin Data
+                  </NavDropdown.Item>
+                )}
                 <NavDropdown.Divider />
                 <NavDropdown.Item onClick={handleLogout}>
                   Logout
