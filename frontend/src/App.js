@@ -44,6 +44,7 @@ function App() {
           <Route path="/profile" element={<StudentProfile />} />
           <Route path="/FAQ" element={<FAQ />} />
           <Route path="/scholarships" element={<Scholarships />} />
+
           <Route
             path="/shortlisted"
             element={

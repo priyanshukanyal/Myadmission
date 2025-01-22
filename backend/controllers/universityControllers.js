@@ -1,6 +1,7 @@
 import University from "../models/universityModel.js";
 import ShortlistedUniversity from "../models/ShortlistedUniversity.js";
 
+// Add a university to the shortlist
 export const addToShortlist = async (req, res) => {
   try {
     const { universityId } = req.body;
@@ -14,6 +15,7 @@ export const addToShortlist = async (req, res) => {
       return res.status(400).json({ message: "University ID is required." });
     }
 
+    // Check if the university already exists in the shortlist
     const existingShortlist = await ShortlistedUniversity.findOne({
       user: userId,
       university: universityId,
@@ -22,6 +24,7 @@ export const addToShortlist = async (req, res) => {
       return res.status(400).json({ message: "Already shortlisted." });
     }
 
+    // Add the university to the shortlist
     const newShortlist = new ShortlistedUniversity({
       user: userId,
       university: universityId,
@@ -35,6 +38,7 @@ export const addToShortlist = async (req, res) => {
   }
 };
 
+// Get all shortlisted universities for the logged-in user
 export const getShortlistedUniversities = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -46,7 +50,7 @@ export const getShortlistedUniversities = async (req, res) => {
     });
 
     if (!shortlisted.length) {
-      return res.status(200).json([]);
+      return res.status(200).json([]); // Return an empty array if no shortlisted universities
     }
 
     res.status(200).json(shortlisted);
@@ -56,6 +60,7 @@ export const getShortlistedUniversities = async (req, res) => {
   }
 };
 
+// Remove a university from the shortlist
 export const removeFromShortlist = async (req, res) => {
   try {
     const userId = req.user?._id;
@@ -83,15 +88,13 @@ export const removeFromShortlist = async (req, res) => {
   }
 };
 
-// Get all universities
+// Get all universities based on filter criteria
 export const getAllUniversities = async (req, res) => {
   try {
-    // Parse the filter object from query parameters
     const filter = req.query.filter ? JSON.parse(req.query.filter) : {};
-    // Initialize a filter object for MongoDB
     const mongoFilters = {};
 
-    // Apply filters conditionally
+    // Apply various filters based on query parameters
     if (filter.satMathScore) {
       mongoFilters.satMathMin = { $lte: parseInt(filter.satMathScore, 10) };
     }
@@ -123,7 +126,7 @@ export const getAllUniversities = async (req, res) => {
     if (filter.universityName) {
       mongoFilters.universityName = {
         $regex: filter.universityName,
-        $options: "i", // Case-insensitive partial match
+        $options: "i", // Case-insensitive match
       };
     }
 
@@ -135,7 +138,7 @@ export const getAllUniversities = async (req, res) => {
       };
     }
 
-    // Fetch universities based on the filters
+    // Fetch universities from the database with the applied filters
     const universities = await University.find(mongoFilters);
 
     if (universities.length === 0) {
@@ -150,7 +153,7 @@ export const getAllUniversities = async (req, res) => {
   }
 };
 
-// Get a university by ID
+// Get a university by its ID
 export const getUniversityById = async (req, res) => {
   try {
     const university = await University.findById(req.params.id);
@@ -173,7 +176,7 @@ export const createUniversity = async (req, res) => {
   }
 };
 
-// Update a university by ID
+// Update an existing university by its ID
 export const updateUniversity = async (req, res) => {
   try {
     const updatedUniversity = await University.findByIdAndUpdate(
@@ -189,7 +192,7 @@ export const updateUniversity = async (req, res) => {
   }
 };
 
-// Delete a university by ID
+// Delete a university by its ID
 export const deleteUniversity = async (req, res) => {
   try {
     const deletedUniversity = await University.findByIdAndDelete(req.params.id);
@@ -200,13 +203,14 @@ export const deleteUniversity = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-// Search or get all university names
+
+// Get university names with optional search filter
 export const getUniversityNames = async (req, res) => {
   try {
-    const { search } = req.query; // Extract 'search' query parameter
+    const { search } = req.query;
 
     const query = search
-      ? { universityName: { $regex: search, $options: "i" } } // Case-insensitive search
+      ? { universityName: { $regex: search, $options: "i" } }
       : {};
 
     const universityNames = await University.find(query, "universityName");
@@ -215,6 +219,7 @@ export const getUniversityNames = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
 // export const addToShortlist = async (req, res) => {
 //   try {
 //     const { universityId } = req.body;
