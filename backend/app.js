@@ -7,6 +7,7 @@ import cors from "cors"; // Import CORS
 import universityRoutes from "./routes/universityRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import studentProfileRoutes from "./routes/studentProfileRoutes.js";
+import adminModuleRoutes from "./routes/SemesterApplicationDatesRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -31,6 +32,7 @@ mongoose
 app.use("/api/universities", universityRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api", studentProfileRoutes);
+app.use("/api/admin-module", adminModuleRoutes);
 
 // Start the server
 app.listen(PORT, () => {

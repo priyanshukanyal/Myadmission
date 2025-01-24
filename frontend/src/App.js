@@ -16,6 +16,7 @@ import Shortlisted from "./pages/Shortlisted.js";
 import FAQ from "./pages/FAQ.js";
 import Scholarships from "./pages/Scholarships.js";
 import StudentProfile from "./components/StudentProfile.js";
+import SemesterDatesForm from "./pages/SemesterDatesForm.js";
 
 function App() {
   // State to store shortlisted universities
@@ -46,6 +47,7 @@ function App() {
           <Route path="/profile" element={<StudentProfile />} />
           <Route path="/FAQ" element={<FAQ />} />
           <Route path="/scholarships" element={<Scholarships />} />
+          <Route path="/admin-module" element={<SemesterDatesForm />} />
 
           <Route
             path="/shortlisted"
