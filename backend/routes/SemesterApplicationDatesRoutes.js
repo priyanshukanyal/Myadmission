@@ -3,6 +3,7 @@ import {
   createOrUpdateSemesterDates,
   getSemesterDatesByUniversity,
   deleteSemesterDates,
+  getAllSemesterDates,
 } from "../controllers/SemesterApplicationDatesController.js";
 
 const router = express.Router();
@@ -15,5 +16,8 @@ router.get("/semester-dates/:universityId", getSemesterDatesByUniversity);
 
 // DELETE: Delete Semester Application Dates
 router.delete("/semester-dates/:id", deleteSemesterDates);
+
+// GET: Get All Semester Application Dates
+router.get("/semester-dates", getAllSemesterDates);
 
 export default router;

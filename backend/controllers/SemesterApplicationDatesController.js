@@ -29,6 +29,25 @@ export const createOrUpdateSemesterDates = async (req, res) => {
   }
 };
 
+// Get All Semester Application Dates with University Names
+export const getAllSemesterDates = async (req, res) => {
+  try {
+    const semesterDates = await SemesterApplicationDates.find()
+      .populate("university", "universityName") // Only populate the university name
+      .select(
+        "fallStartDate fallEndDate springStartDate springEndDate university"
+      ); // Select specific fields
+
+    if (!semesterDates.length) {
+      return res.status(404).json({ message: "No application dates found" });
+    }
+
+    res.status(200).json(semesterDates);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Get Application Dates by University
 export const getSemesterDatesByUniversity = async (req, res) => {
   try {
