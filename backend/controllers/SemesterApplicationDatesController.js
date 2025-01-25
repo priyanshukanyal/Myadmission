@@ -8,8 +8,21 @@ export const createOrUpdateSemesterDates = async (req, res) => {
       universityId,
       fallStartDate,
       fallEndDate,
+      fallOrientationWeekStart,
+      fallOrientationWeekEnd,
+      fallAcademicSemesterStart,
+      fallAcademicSemesterEnd,
       springStartDate,
       springEndDate,
+      springOrientationWeekStart,
+      springOrientationWeekEnd,
+      springAcademicSemesterStart,
+      springAcademicSemesterEnd,
+      aboutUniversity,
+      visa,
+      weather,
+      security,
+      placement,
     } = req.body;
 
     const university = await University.findById(universityId);
@@ -19,8 +32,26 @@ export const createOrUpdateSemesterDates = async (req, res) => {
 
     const semesterDates = await SemesterApplicationDates.findOneAndUpdate(
       { university: universityId },
-      { fallStartDate, fallEndDate, springStartDate, springEndDate },
-      { new: true, upsert: true }
+      {
+        fallStartDate,
+        fallEndDate,
+        fallOrientationWeekStart,
+        fallOrientationWeekEnd,
+        fallAcademicSemesterStart,
+        fallAcademicSemesterEnd,
+        springStartDate,
+        springEndDate,
+        springOrientationWeekStart,
+        springOrientationWeekEnd,
+        springAcademicSemesterStart,
+        springAcademicSemesterEnd,
+        aboutUniversity,
+        visa,
+        weather,
+        security,
+        placement,
+      },
+      { new: true, upsert: true } // `upsert: true` creates a new document if it doesn't exist
     );
 
     res.status(200).json(semesterDates);
@@ -35,8 +66,8 @@ export const getAllSemesterDates = async (req, res) => {
     const semesterDates = await SemesterApplicationDates.find()
       .populate("university", "universityName") // Only populate the university name
       .select(
-        "fallStartDate fallEndDate springStartDate springEndDate university"
-      ); // Select specific fields
+        "fallStartDate fallEndDate fallOrientationWeekStart fallOrientationWeekEnd fallAcademicSemesterStart fallAcademicSemesterEnd springStartDate springEndDate springOrientationWeekStart springOrientationWeekEnd springAcademicSemesterStart springAcademicSemesterEnd aboutUniversity visa weather security placement university"
+      ); // Select all relevant fields
 
     if (!semesterDates.length) {
       return res.status(404).json({ message: "No application dates found" });

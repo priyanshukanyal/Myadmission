@@ -283,10 +283,8 @@ const UniversityList = () => {
                             {uni.ranking}
                           </p>
                           <p>
-                            <strong>Fees: </strong>$ {uni.fees}
-                          </p>
-                          <p>
-                            <strong>Fees in INR: </strong>₹ {uni.fees * 86.5}
+                            <strong>Fees: </strong>$ {uni.fees} {" / "} ₹{" "}
+                            {uni.fees * 86.5}
                           </p>
                           <p>
                             <strong>Is IVY: </strong>

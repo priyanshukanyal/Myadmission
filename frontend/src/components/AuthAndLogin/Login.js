@@ -16,6 +16,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    setError(""); // Clear errors
     if (!email || !password) {
       setError("Please fill in both fields");
       return;
@@ -23,20 +24,27 @@ const Login = () => {
 
     setLoading(true);
     try {
+      // Await the loginUser API and destructure the response correctly
       const data = await loginUser(email, password);
-      login(data.token, data.user);
+      console.log("Login Response Data:", data); // Debug response structure
 
-      if (data.user.role === "Admin" || data.user.role === "Super Admin") {
-        navigate("/admin-dashboard");
-      } else {
-        navigate("/");
-      }
+      // Pass the correct token and user to AuthContext
+      login(data.token, {
+        name: data.name,
+        email: data.email,
+        role: data.role,
+        _id: data._id,
+      });
+
+      // Navigate based on role
+      const isAdmin = data.role === "Admin" || data.role === "Super Admin";
+      navigate(isAdmin ? "/admin-module" : "/");
     } catch (err) {
-      setError("Invalid credentials");
+      console.error("Login error:", err); // Debug error details
+      setError(err.response?.data?.message || "Unable to login.");
     } finally {
       setLoading(false);
     }
-    window.location.reload();
   };
 
   const togglePasswordVisibility = () => {
@@ -71,8 +79,9 @@ const Login = () => {
             />
             <Button
               variant="link"
+              type="button"
               onClick={togglePasswordVisibility}
-              className="ml-2"
+              className="ms-2"
             >
               {passwordVisible ? "Hide" : "Show"}
             </Button>

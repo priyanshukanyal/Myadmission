@@ -8,6 +8,19 @@ const SemesterDatesForm = () => {
     fallEndDate: "",
     springStartDate: "",
     springEndDate: "",
+    fallOrientationWeekStart: "",
+    fallOrientationWeekEnd: "",
+    fallAcademicSemesterStart: "",
+    fallAcademicSemesterEnd: "",
+    springOrientationWeekStart: "",
+    springOrientationWeekEnd: "",
+    springAcademicSemesterStart: "",
+    springAcademicSemesterEnd: "",
+    aboutUniversity: "",
+    visa: "",
+    weather: "",
+    security: "",
+    placement: "",
   });
 
   const [universityId, setUniversityId] = useState(""); // Store university ID here
@@ -28,10 +41,31 @@ const SemesterDatesForm = () => {
         );
         setSemesterDates(response.data);
         setFormData({
-          fallStartDate: response.data.fallStartDate.slice(0, 10),
-          fallEndDate: response.data.fallEndDate.slice(0, 10),
-          springStartDate: response.data.springStartDate.slice(0, 10),
-          springEndDate: response.data.springEndDate.slice(0, 10),
+          fallStartDate: response.data.fallStartDate?.slice(0, 10) || "",
+          fallEndDate: response.data.fallEndDate?.slice(0, 10) || "",
+          springStartDate: response.data.springStartDate?.slice(0, 10) || "",
+          springEndDate: response.data.springEndDate?.slice(0, 10) || "",
+          fallOrientationWeekStart:
+            response.data.fallOrientationWeekStart?.slice(0, 10) || "",
+          fallOrientationWeekEnd:
+            response.data.fallOrientationWeekEnd?.slice(0, 10) || "",
+          fallAcademicSemesterStart:
+            response.data.fallAcademicSemesterStart?.slice(0, 10) || "",
+          fallAcademicSemesterEnd:
+            response.data.fallAcademicSemesterEnd?.slice(0, 10) || "",
+          springOrientationWeekStart:
+            response.data.springOrientationWeekStart?.slice(0, 10) || "",
+          springOrientationWeekEnd:
+            response.data.springOrientationWeekEnd?.slice(0, 10) || "",
+          springAcademicSemesterStart:
+            response.data.springAcademicSemesterStart?.slice(0, 10) || "",
+          springAcademicSemesterEnd:
+            response.data.springAcademicSemesterEnd?.slice(0, 10) || "",
+          aboutUniversity: response.data.aboutUniversity || "",
+          visa: response.data.visa || "",
+          weather: response.data.weather || "",
+          security: response.data.security || "",
+          placement: response.data.placement || "",
         });
         setIsEditing(false); // Show the view mode initially when data is available
       } catch (error) {
@@ -41,6 +75,19 @@ const SemesterDatesForm = () => {
           fallEndDate: "",
           springStartDate: "",
           springEndDate: "",
+          fallOrientationWeekStart: "",
+          fallOrientationWeekEnd: "",
+          fallAcademicSemesterStart: "",
+          fallAcademicSemesterEnd: "",
+          springOrientationWeekStart: "",
+          springOrientationWeekEnd: "",
+          springAcademicSemesterStart: "",
+          springAcademicSemesterEnd: "",
+          aboutUniversity: "",
+          visa: "",
+          weather: "",
+          security: "",
+          placement: "",
         });
         setIsEditing(true); // Enable editing if no data exists
       }
@@ -91,52 +138,6 @@ const SemesterDatesForm = () => {
         }}
       />
 
-      <div style={{ marginTop: "20px" }}>
-        {/* Display selected university and their semester dates */}
-        {semesterDates && universityId && !isEditing && (
-          <div>
-            <h3>Current Semester Dates for {universityName}</h3>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                padding: "10px",
-                border: "1px solid #ddd",
-                marginBottom: "20px",
-              }}
-            >
-              <div>
-                <strong>Fall Semester:</strong>
-                <p>Start Date: {semesterDates.fallStartDate.slice(0, 10)}</p>
-                <p>End Date: {semesterDates.fallEndDate.slice(0, 10)}</p>
-              </div>
-              <div>
-                <strong>Spring Semester:</strong>
-                <p>Start Date: {semesterDates.springStartDate.slice(0, 10)}</p>
-                <p>End Date: {semesterDates.springEndDate.slice(0, 10)}</p>
-              </div>
-            </div>
-            <div>
-              <button
-                onClick={() => setIsEditing(true)}
-                style={{
-                  padding: "10px 20px",
-                  fontSize: "16px",
-                  backgroundColor: "#007BFF",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
-              >
-                Edit Semester Dates
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Form for inputting or updating semester dates */}
       <form
         onSubmit={handleSubmit}
         style={{
@@ -153,78 +154,59 @@ const SemesterDatesForm = () => {
             : `Enter Semester Application Dates for ${universityName}`}
         </h2>
 
-        <div style={{ marginBottom: "15px" }}>
-          <label style={{ display: "block", fontWeight: "bold" }}>
-            Fall Semester Application Start Date:
-          </label>
-          <input
-            type="date"
-            name="fallStartDate"
-            value={formData.fallStartDate}
-            onChange={handleChange}
-            required
-            style={{
-              padding: "10px",
-              width: "100%",
-              borderRadius: "4px",
-              border: "1px solid #ccc",
-            }}
-          />
-        </div>
-        <div style={{ marginBottom: "15px" }}>
-          <label style={{ display: "block", fontWeight: "bold" }}>
-            Fall Semester Application End Date:
-          </label>
-          <input
-            type="date"
-            name="fallEndDate"
-            value={formData.fallEndDate}
-            onChange={handleChange}
-            required
-            style={{
-              padding: "10px",
-              width: "100%",
-              borderRadius: "4px",
-              border: "1px solid #ccc",
-            }}
-          />
-        </div>
-        <div style={{ marginBottom: "15px" }}>
-          <label style={{ display: "block", fontWeight: "bold" }}>
-            Spring Semester Application Start Date:
-          </label>
-          <input
-            type="date"
-            name="springStartDate"
-            value={formData.springStartDate}
-            onChange={handleChange}
-            required
-            style={{
-              padding: "10px",
-              width: "100%",
-              borderRadius: "4px",
-              border: "1px solid #ccc",
-            }}
-          />
-        </div>
-        <div style={{ marginBottom: "15px" }}>
-          <label style={{ display: "block", fontWeight: "bold" }}>
-            Spring Semester Application End Date:
-          </label>
-          <input
-            type="date"
-            name="springEndDate"
-            value={formData.springEndDate}
-            onChange={handleChange}
-            required
-            style={{
-              padding: "10px",
-              width: "100%",
-              borderRadius: "4px",
-              border: "1px solid #ccc",
-            }}
-          />
-        </div>
+        {Object.keys(formData).map((field, index) => (
+          <div key={index} style={{ marginBottom: "15px" }}>
+            <label style={{ display: "block", fontWeight: "bold" }}>
+              {field
+                .replace(/([A-Z])/g, " $1")
+                .replace(/^./, (str) => str.toUpperCase())}
+            </label>
+            <input
+              type={
+                [
+                  "fallStartDate",
+                  "fallEndDate",
+                  "springStartDate",
+                  "springEndDate",
+                  "fallOrientationWeekStart",
+                  "fallOrientationWeekEnd",
+                  "fallAcademicSemesterStart",
+                  "fallAcademicSemesterEnd",
+                  "springOrientationWeekStart",
+                  "springOrientationWeekEnd",
+                  "springAcademicSemesterStart",
+                  "springAcademicSemesterEnd",
+                ].includes(field)
+                  ? "date"
+                  : "text"
+              }
+              name={field}
+              value={formData[field]}
+              onChange={handleChange}
+              required={[
+                "fallStartDate",
+                "fallEndDate",
+                "springStartDate",
+                "springEndDate",
+                "fallOrientationWeekStart",
+                "fallOrientationWeekEnd",
+                "fallAcademicSemesterStart",
+                "fallAcademicSemesterEnd",
+                "springOrientationWeekStart",
+                "springOrientationWeekEnd",
+                "springAcademicSemesterStart",
+                "springAcademicSemesterEnd",
+              ].includes(field)}
+              style={{
+                padding: "10px",
+                width: "100%",
+                borderRadius: "4px",
+                border: "1px solid #ccc",
+              }}
+            />
+          </div>
+        ))}
+
         <button
           type="submit"
           disabled={loading}
@@ -240,36 +222,6 @@ const SemesterDatesForm = () => {
         >
           {loading ? "Saving..." : "Save"}
         </button>
-
-        {isEditing && (
-          <button
-            type="button"
-            onClick={() => setIsEditing(false)}
-            style={{
-              padding: "10px 20px",
-              marginLeft: "10px",
-              fontSize: "16px",
-              backgroundColor: "#DC3545",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-          >
-            Cancel
-          </button>
-        )}
-
-        {message && (
-          <p
-            style={{
-              marginTop: "20px",
-              color: message.includes("Error") ? "red" : "green",
-            }}
-          >
-            {message}
-          </p>
-        )}
       </form>
     </div>
   );
@@ -294,10 +246,11 @@ export default SemesterDatesForm;
 //   const [semesterDates, setSemesterDates] = useState(null); // Store existing semester dates
 //   const [loading, setLoading] = useState(false);
 //   const [message, setMessage] = useState("");
+//   const [isEditing, setIsEditing] = useState(false); // Toggle between view and edit modes
 
 //   // Fetch existing semester dates if available
 //   useEffect(() => {
-//     if (!universityId) return; // Skip fetch if no university selected
+//     if (!universityId) return; // Skip fetch if no university is selected
 
 //     const fetchSemesterDates = async () => {
 //       try {
@@ -311,8 +264,16 @@ export default SemesterDatesForm;
 //           springStartDate: response.data.springStartDate.slice(0, 10),
 //           springEndDate: response.data.springEndDate.slice(0, 10),
 //         });
+//         setIsEditing(false); // Show the view mode initially when data is available
 //       } catch (error) {
-//         console.log("No existing data found.");
+//         setSemesterDates(null); // No existing data
+//         setFormData({
+//           fallStartDate: "",
+//           fallEndDate: "",
+//           springStartDate: "",
+//           springEndDate: "",
+//         });
+//         setIsEditing(true); // Enable editing if no data exists
 //       }
 //     };
 
@@ -341,6 +302,8 @@ export default SemesterDatesForm;
 //         }
 //       );
 //       setMessage("Semester dates saved successfully!");
+//       setSemesterDates(formData); // Update semester dates locally
+//       setIsEditing(false); // Switch to view mode after saving
 //     } catch (error) {
 //       setMessage("Error saving semester dates.");
 //     } finally {
@@ -361,7 +324,7 @@ export default SemesterDatesForm;
 
 //       <div style={{ marginTop: "20px" }}>
 //         {/* Display selected university and their semester dates */}
-//         {semesterDates && universityId && (
+//         {semesterDates && universityId && !isEditing && (
 //           <div>
 //             <h3>Current Semester Dates for {universityName}</h3>
 //             <div
@@ -384,20 +347,42 @@ export default SemesterDatesForm;
 //                 <p>End Date: {semesterDates.springEndDate.slice(0, 10)}</p>
 //               </div>
 //             </div>
+//             <div>
+//               <button
+//                 onClick={() => setIsEditing(true)}
+//                 style={{
+//                   padding: "10px 20px",
+//                   fontSize: "16px",
+//                   backgroundColor: "#007BFF",
+//                   color: "white",
+//                   border: "none",
+//                   borderRadius: "4px",
+//                   cursor: "pointer",
+//                 }}
+//               >
+//                 Edit Semester Dates
+//               </button>
+//             </div>
 //           </div>
 //         )}
 //       </div>
 
+//       {/* Form for inputting or updating semester dates */}
 //       <form
 //         onSubmit={handleSubmit}
 //         style={{
+//           marginTop: "20px",
 //           backgroundColor: "#f9f9f9",
 //           padding: "20px",
 //           borderRadius: "8px",
 //           boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
 //         }}
 //       >
-//         <h2>Enter Semester Application Dates for {universityName}</h2>
+//         <h2>
+//           {isEditing
+//             ? `Edit Semester Application Dates for ${universityName}`
+//             : `Enter Semester Application Dates for ${universityName}`}
+//         </h2>
 
 //         <div style={{ marginBottom: "15px" }}>
 //           <label style={{ display: "block", fontWeight: "bold" }}>
@@ -486,6 +471,25 @@ export default SemesterDatesForm;
 //         >
 //           {loading ? "Saving..." : "Save"}
 //         </button>
+
+//         {isEditing && (
+//           <button
+//             type="button"
+//             onClick={() => setIsEditing(false)}
+//             style={{
+//               padding: "10px 20px",
+//               marginLeft: "10px",
+//               fontSize: "16px",
+//               backgroundColor: "#DC3545",
+//               color: "white",
+//               border: "none",
+//               borderRadius: "4px",
+//               cursor: "pointer",
+//             }}
+//           >
+//             Cancel
+//           </button>
+//         )}
 
 //         {message && (
 //           <p

@@ -31,7 +31,7 @@ const AdminHeader = () => {
             isActive ? { ...linkStyle, ...activeStyle } : linkStyle
           }
         >
-          Edit
+          Add/Update
         </NavLink>
       </nav>
     </header>

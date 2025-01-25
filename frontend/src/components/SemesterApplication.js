@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Table, Spinner, Alert } from "react-bootstrap";
+import { Table, Spinner, Alert, Card, Col, Row } from "react-bootstrap";
 
 const SemesterApplicationDatesPage = () => {
   const [data, setData] = useState([]);
@@ -28,8 +28,8 @@ const SemesterApplicationDatesPage = () => {
 
   if (loading) {
     return (
-      <div className="text-center">
-        <Spinner animation="border" />
+      <div className="text-center mt-5">
+        <Spinner animation="border" variant="primary" />
         <p>Loading...</p>
       </div>
     );
@@ -37,7 +37,7 @@ const SemesterApplicationDatesPage = () => {
 
   if (error) {
     return (
-      <div className="text-center">
+      <div className="text-center mt-5">
         <Alert variant="danger">{error}</Alert>
       </div>
     );
@@ -45,29 +45,89 @@ const SemesterApplicationDatesPage = () => {
 
   return (
     <div className="container mt-4">
-      <h2 className="mb-4">Semester Application Dates</h2>
-      <Table striped bordered hover responsive>
-        <thead>
-          <tr>
-            <th>University Name</th>
-            <th>Fall Start Date</th>
-            <th>Fall End Date</th>
-            <th>Spring Start Date</th>
-            <th>Spring End Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item) => (
-            <tr key={item._id}>
-              <td>{item.university.universityName}</td>
-              <td>{new Date(item.fallStartDate).toLocaleDateString()}</td>
-              <td>{new Date(item.fallEndDate).toLocaleDateString()}</td>
-              <td>{new Date(item.springStartDate).toLocaleDateString()}</td>
-              <td>{new Date(item.springEndDate).toLocaleDateString()}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+      <h2 className="mb-4 text-center text-primary">
+        Semester Application Dates
+      </h2>
+
+      <Row>
+        {data.map((item) => (
+          <Col md={6} lg={4} className="mb-4" key={item._id}>
+            <Card>
+              <Card.Header className="bg-primary text-white">
+                <h5>{item.university.universityName}</h5>
+              </Card.Header>
+              <Card.Body>
+                <Table bordered responsive>
+                  <tbody>
+                    <tr>
+                      <th>Fall Semester Start</th>
+                      <td>
+                        {new Date(item.fallStartDate).toLocaleDateString()}
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Fall Semester End</th>
+                      <td>{new Date(item.fallEndDate).toLocaleDateString()}</td>
+                    </tr>
+                    <tr>
+                      <th>Spring Semester Start</th>
+                      <td>
+                        {new Date(item.springStartDate).toLocaleDateString()}
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Spring Semester End</th>
+                      <td>
+                        {new Date(item.springEndDate).toLocaleDateString()}
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Fall Orientation Week</th>
+                      <td>
+                        {item.fallOrientationWeekStart
+                          ? `${new Date(
+                              item.fallOrientationWeekStart
+                            ).toLocaleDateString()} - ${new Date(
+                              item.fallOrientationWeekEnd
+                            ).toLocaleDateString()}`
+                          : "N/A"}
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Spring Orientation Week</th>
+                      <td>
+                        {item.springOrientationWeekStart
+                          ? `${new Date(
+                              item.springOrientationWeekStart
+                            ).toLocaleDateString()} - ${new Date(
+                              item.springOrientationWeekEnd
+                            ).toLocaleDateString()}`
+                          : "N/A"}
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Visa Info</th>
+                      <td>{item.visa || "N/A"}</td>
+                    </tr>
+                    <tr>
+                      <th>Weather</th>
+                      <td>{item.weather || "N/A"}</td>
+                    </tr>
+                    <tr>
+                      <th>Security</th>
+                      <td>{item.security || "N/A"}</td>
+                    </tr>
+                    <tr>
+                      <th>Placement</th>
+                      <td>{item.placement || "N/A"}</td>
+                    </tr>
+                  </tbody>
+                </Table>
+              </Card.Body>
+            </Card>
+          </Col>
+        ))}
+      </Row>
     </div>
   );
 };
