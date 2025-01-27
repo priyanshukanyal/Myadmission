@@ -63,7 +63,7 @@ const Header = () => {
             {isAdmin && (
               <Nav.Link
                 as={Link}
-                to="/admin"
+                to="/admin-module"
                 className="fw-semibold text-danger"
               >
                 Admin Panel

@@ -15,8 +15,8 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
     setError(""); // Clear errors
+
     if (!email || !password) {
       setError("Please fill in both fields");
       return;
@@ -24,11 +24,24 @@ const Login = () => {
 
     setLoading(true);
     try {
-      // Await the loginUser API and destructure the response correctly
       const data = await loginUser(email, password);
       console.log("Login Response Data:", data); // Debug response structure
 
-      // Pass the correct token and user to AuthContext
+      const role = data.role;
+      if (role === "Guest") {
+        navigate("/"); // Redirect Guest users to "/"
+        return;
+      }
+
+      // Check if user is Admin or Super Admin
+      const isAdmin = role === "Admin" || role === "Super Admin";
+      if (!isAdmin) {
+        setError("You are not an admin.");
+        setLoading(false);
+        return;
+      }
+
+      // Save auth details
       login(data.token, {
         name: data.name,
         email: data.email,
@@ -36,11 +49,13 @@ const Login = () => {
         _id: data._id,
       });
 
-      // Navigate based on role
-      const isAdmin = data.role === "Admin" || data.role === "Super Admin";
-      navigate(isAdmin ? "/admin-module" : "/");
+      // Store admin login status in localStorage
+      localStorage.setItem("adminLoggedIn", "true");
+
+      // Redirect to admin module
+      navigate("/admin-module");
     } catch (err) {
-      console.error("Login error:", err); // Debug error details
+      console.error("Login error:", err);
       setError(err.response?.data?.message || "Unable to login.");
     } finally {
       setLoading(false);
@@ -53,7 +68,7 @@ const Login = () => {
 
   return (
     <div>
-      <h3 className="text-center mb-3">Login</h3>
+      <h3 className="text-center mb-3">Admin Login</h3>
       {error && <Alert variant="danger">{error}</Alert>}
       <Form onSubmit={handleLogin}>
         <Form.Group className="mb-3" controlId="formBasicEmail">

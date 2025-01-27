@@ -20,6 +20,8 @@ import AdminHeader from "./components/AdminHeader.js";
 import AdminFooter from "./components/AdminFooter.js";
 import SemesterApplicationDatesPage from "./components/SemesterApplication";
 import UpdateSemesterDateForm from "./components/UpdateSemesterDateForm";
+import UniversityCRUD from "./pages/UniversityCRUD.js";
+import AdminLogin from "./pages/adminLogin.js"; // Import AdminLogin component
 function Layout({ children }) {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin-module");
@@ -74,6 +76,11 @@ function App() {
               element={<SemesterApplicationDatesPage />}
             />
             <Route path="/admin-module" element={<SemesterDatesForm />}></Route>
+            <Route
+              path="/admin-module/University-CRUD"
+              element={<UniversityCRUD />}
+            ></Route>
+            <Route path="/admin-module/login" element={<AdminLogin />} />
           </Routes>
         </Layout>
       </BrowserRouter>

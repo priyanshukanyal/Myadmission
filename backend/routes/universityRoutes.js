@@ -27,8 +27,8 @@ router.delete("/shortlist/:id", protect, removeFromShortlist); // Remove from sh
 router.get("/", getAllUniversities); // Get all universities
 router.get("/names", getUniversityNames); // Get university names
 router.get("/:id", getUniversityById); // Get university by ID
-router.post("/", protect, createUniversity); // Create new university
-router.put("/:id", protect, updateUniversity); // Update university by ID
+router.post("/", createUniversity); // Create new university
+router.put("/:id", updateUniversity); // Update university by ID
 router.delete("/:id", protect, deleteUniversity); // Delete university by ID
 
 router.post("/apply", protect, async (req, res) => {
