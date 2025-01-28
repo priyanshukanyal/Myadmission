@@ -290,6 +290,63 @@ const UniversityCRUD = () => {
                     ))}
                   </div>
                 </div>
+              ) : field === "country" ? (
+                <div className="mb-3 col-md-4" key={field}>
+                  <label className="form-label fw-bold">Country</label>
+                  <select
+                    className="form-control"
+                    name={field}
+                    value={form[field]}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="">Select a country</option>
+                    {[
+                      "United States",
+                      "Canada",
+                      "United Kingdom",
+                      "Australia",
+                      "Germany",
+                      "New Zealand",
+                      "Ireland",
+                      "United Arab Emirates",
+                      "Singapore",
+                      "France",
+                    ].map((country) => (
+                      <option key={country} value={country}>
+                        {country}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ) : field === "isIvy" ? (
+                <div className="mb-3 col-md-4" key={field}>
+                  <label className="form-label fw-bold">Is Ivy League?</label>
+                  <div>
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name={field}
+                        value="Yes"
+                        checked={form[field] === "Yes"}
+                        onChange={handleInputChange}
+                      />
+                      <label className="form-check-label">Yes</label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name={field}
+                        value="No"
+                        checked={form[field] === "No"}
+                        onChange={handleInputChange}
+                      />
+                      <label className="form-check-label">No</label>
+                    </div>
+                  </div>
+                </div>
               ) : (
                 <div className="mb-3 col-md-4" key={field}>
                   <label className="form-label fw-bold">
@@ -300,7 +357,62 @@ const UniversityCRUD = () => {
                     className="form-control"
                     name={field}
                     value={form[field]}
-                    onChange={handleInputChange}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      const numberFields = [
+                        "satErwMax",
+                        "satErwMin",
+                        "satMathMax",
+                        "satMathMin",
+                        "actMax",
+                        "actMin",
+                        "academics",
+                        "social",
+                        "qualityOfLife",
+                        "placement",
+                        "male",
+                        "female",
+                        "financialAid",
+                        "pellGrant",
+                        "studentLoans",
+                        "accepted",
+                        "enrolled",
+                        "gradIn6Years",
+                        "returningFreshmen",
+                      ];
+                      if (numberFields.includes(field)) {
+                        if (field === "satErwMax" && value > 800) return;
+                        if (field === "satErwMin" && value > 800) return;
+                        if (field === "satMathMax" && value > 800) return;
+                        if (field === "satMathMin" && value > 800) return;
+                        if (field === "actMax" && value > 36) return;
+                        if (field === "actMin" && value > 36) return;
+                        if (
+                          [
+                            "placement",
+                            "male",
+                            "female",
+                            "financialAid",
+                            "pellGrant",
+                            "studentLoans",
+                            "accepted",
+                            "enrolled",
+                            "gradIn6Years",
+                            "returningFreshmen",
+                          ].includes(field) &&
+                          value > 100
+                        )
+                          return;
+                        if (
+                          ["academics", "social", "qualityOfLife"].includes(
+                            field
+                          ) &&
+                          value > 5
+                        )
+                          return;
+                      }
+                      handleInputChange(e);
+                    }}
                     required
                   />
                 </div>
