@@ -8,6 +8,7 @@ const UniversityDetail = () => {
   const navigate = useNavigate();
   const [university, setUniversity] = useState(null);
   const [semesterData, setSemesterData] = useState(null);
+  const [countryData, setCountryData] = useState(null); // New State for Country Data
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAll, setShowAll] = useState(false);
@@ -19,6 +20,9 @@ const UniversityDetail = () => {
           `http://localhost:8111/api/universities/${id}`
         );
         setUniversity(response.data);
+        if (response.data.country) {
+          fetchCountryData(response.data.country);
+        }
       } catch (error) {
         setError("Error fetching university details.");
         console.error(error.message);
@@ -34,6 +38,17 @@ const UniversityDetail = () => {
       } catch (error) {
         setSemesterData(null);
         console.error("Error fetching semester application data:", error);
+      }
+    };
+    const fetchCountryData = async (countryName) => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8111/api/countries/name/${countryName}`
+        );
+        setCountryData(response.data);
+      } catch (error) {
+        setCountryData(null);
+        console.error("Error fetching country data:", error);
       }
     };
 
@@ -230,6 +245,51 @@ const UniversityDetail = () => {
           )}
         </div>
       </div>
+      {/* Country Details Card */}
+      {countryData && (
+        <div className="card shadow-lg mb-4">
+          <div className="card-header bg-success text-white">
+            <h2 className="card-title text-center">
+              Country Information: {countryData.country_name}
+            </h2>
+          </div>
+          <div className="card-body">
+            <p>
+              <strong>Official Language:</strong>{" "}
+              {countryData.official_language}
+            </p>
+            <p>
+              <strong>Language of Instruction:</strong>{" "}
+              {countryData.language_instruction}
+            </p>
+            <p>
+              <strong>Work Opportunity:</strong> {countryData.work_opportunity}
+            </p>
+            <p>
+              <strong>Visa Requirements:</strong>{" "}
+              {countryData.visa_requirements}
+            </p>
+            <p>
+              <strong>Healthcare:</strong> {countryData.healthcare}
+            </p>
+            <p>
+              <strong>Cost of Living:</strong> ${countryData.cost_of_living}
+            </p>
+            <p>
+              <strong>Climate:</strong> {countryData.climate}
+            </p>
+            <p>
+              <strong>GDP:</strong> {countryData.gdp}
+            </p>
+            <p>
+              <strong>Tax Policy:</strong> {countryData.tax_policy}
+            </p>
+            <p>
+              <strong>Cultural Support:</strong> {countryData.cultural_support}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

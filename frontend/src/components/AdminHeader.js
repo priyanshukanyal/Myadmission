@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "./generalComponents/authContext";
 
 const AdminHeader = () => {
@@ -50,7 +50,12 @@ const AdminHeader = () => {
       }}
     >
       <div>
-        <h1>Admin Dashboard</h1>
+        <Link
+          to="/admin-module/University-CRUD"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <h1>Admin Dashboard</h1>
+        </Link>
         <nav>
           <NavLink
             to="/admin-module/semester-application-dates"
@@ -67,6 +72,14 @@ const AdminHeader = () => {
             }
           >
             Add/Update
+          </NavLink>
+          <NavLink
+            to="/admin-module/country-management"
+            style={({ isActive }) =>
+              isActive ? { ...linkStyle, ...activeStyle } : linkStyle
+            }
+          >
+            Country Management
           </NavLink>
         </nav>
       </div>
