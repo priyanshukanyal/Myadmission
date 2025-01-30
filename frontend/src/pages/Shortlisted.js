@@ -15,20 +15,32 @@ const Shortlisted = () => {
   const [shortlisted, setShortlisted] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
   const { state } = useAuth();
   const { token } = state;
 
   // Fetch shortlisted universities
   useEffect(() => {
     const fetchShortlistedUniversities = async () => {
+      if (!token) return;
+
       try {
         setIsLoading(true);
         const response = await axios.get(
           "http://localhost:8111/api/universities/shortlisted",
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        setShortlisted(response.data);
+
+        console.log("Shortlisted universities:", response.data);
+
+        if (Array.isArray(response.data)) {
+          setShortlisted(response.data);
+        } else {
+          console.warn("Unexpected response format:", response.data);
+          setShortlisted([]);
+        }
       } catch (error) {
+        console.error("Error fetching shortlisted universities:", error);
         setError(
           error.response?.data?.message ||
             "Failed to fetch shortlisted universities."
@@ -38,31 +50,34 @@ const Shortlisted = () => {
       }
     };
 
-    if (token) fetchShortlistedUniversities();
+    fetchShortlistedUniversities();
   }, [token]);
 
+  // Remove university from shortlist
   const handleRemoveShortlist = async (universityId) => {
+    if (!token || !universityId) return;
+
     try {
-      const response = await axios.delete(
+      await axios.delete(
         `http://localhost:8111/api/universities/shortlist/${universityId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      console.log("Successfully removed from shortlist:", response.data);
+      console.log("Successfully removed university:", universityId);
 
+      // Update state to remove the university from the list
       setShortlisted((prevShortlist) =>
         prevShortlist.filter((uni) => uni.university?._id !== universityId)
       );
+
+      setSuccessMessage("University removed from shortlist.");
+      setTimeout(() => setSuccessMessage(null), 3000);
     } catch (error) {
-      console.error(
-        "Error removing shortlisted university:",
-        error.response?.data || error.message
-      );
+      console.error("Error removing shortlisted university:", error);
       setError("Failed to remove the university. Please try again.");
     }
   };
 
-  // Render
   return (
     <Container className="shortlisted-list-page">
       <h1 className="page-title mb-4 text-primary">
@@ -78,6 +93,16 @@ const Shortlisted = () => {
       {error && (
         <Alert variant="danger" onClose={() => setError(null)} dismissible>
           {error}
+        </Alert>
+      )}
+
+      {successMessage && (
+        <Alert
+          variant="success"
+          onClose={() => setSuccessMessage(null)}
+          dismissible
+        >
+          {successMessage}
         </Alert>
       )}
 

@@ -32,14 +32,10 @@ const Register = () => {
 
     setLoading(true);
     try {
-      // Register the user, without overwriting the role since it's "Guest" by default
       const data = await registerUser({ ...userData });
 
-      // Log the response to inspect if data is correct
-      console.log(data);
-
       if (data?.role) {
-        login(data.token, data); // Passing the entire response, including role
+        login(data.token, data);
         if (data.role === "Admin" || data.role === "Super Admin") {
           navigate("/admin-dashboard");
         } else {
@@ -55,16 +51,12 @@ const Register = () => {
     }
   };
 
-  const togglePasswordVisibility = () => {
-    setPasswordVisible((prev) => !prev);
-  };
-
   return (
     <div>
       <h3 className="text-center mb-3">Register</h3>
       {error && <Alert variant="danger">{error}</Alert>}
       <Form onSubmit={handleRegister}>
-        <Form.Group className="mb-3" controlId="formBasicName">
+        <Form.Group className="mb-3">
           <Form.Label>Name</Form.Label>
           <Form.Control
             type="text"
@@ -75,7 +67,7 @@ const Register = () => {
           />
         </Form.Group>
 
-        <Form.Group className="mb-3" controlId="formBasicEmail">
+        <Form.Group className="mb-3">
           <Form.Label>Email</Form.Label>
           <Form.Control
             type="email"
@@ -88,7 +80,7 @@ const Register = () => {
           />
         </Form.Group>
 
-        <Form.Group className="mb-3" controlId="formBasicPassword">
+        <Form.Group className="mb-3">
           <Form.Label>Password</Form.Label>
           <div className="d-flex">
             <Form.Control
@@ -102,8 +94,8 @@ const Register = () => {
             />
             <Button
               variant="link"
-              onClick={togglePasswordVisibility}
-              className="ml-2"
+              onClick={() => setPasswordVisible(!passwordVisible)}
+              className="ms-2"
             >
               {passwordVisible ? "Hide" : "Show"}
             </Button>

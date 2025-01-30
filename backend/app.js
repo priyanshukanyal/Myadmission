@@ -9,6 +9,7 @@ import userRoutes from "./routes/userRoutes.js";
 import studentProfileRoutes from "./routes/studentProfileRoutes.js";
 import adminModuleRoutes from "./routes/SemesterApplicationDatesRoutes.js";
 import countryRoutes from "./routes/countryRoutes.js";
+
 // Load environment variables
 dotenv.config();
 

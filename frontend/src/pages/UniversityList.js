@@ -25,7 +25,7 @@ const UniversityList = () => {
   const [sortCriteria, setSortCriteria] = useState("ranking");
   const { state } = useAuth();
   const { token } = state;
-  const { shortlisted, addShortlist } = useShortlist();
+  const { shortlisted = [], addShortlist } = useShortlist();
 
   const universitiesPerPage = 10;
 

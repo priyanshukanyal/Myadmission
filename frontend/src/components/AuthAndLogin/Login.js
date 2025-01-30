@@ -24,39 +24,22 @@ const Login = () => {
 
     setLoading(true);
     try {
-      const data = await loginUser(email, password);
-      console.log("Login Response Data:", data); // Debug response structure
+      const response = await loginUser(email, password);
+      console.log("Login Response:", response); // Log the entire response
 
-      const role = data.role;
-      if (role === "Guest") {
-        navigate("/"); // Redirect Guest users to "/"
-        return;
+      const { token, user } = response;
+      if (token && user) {
+        login(token, user);
+        if (user.role === "Admin" || user.role === "Super Admin") {
+          navigate("/admin-module");
+        } else {
+          navigate("/");
+        }
+      } else {
+        setError("Login failed: Missing token or user data.");
       }
-
-      // Check if user is Admin or Super Admin
-      const isAdmin = role === "Admin" || role === "Super Admin";
-      if (!isAdmin) {
-        setError("You are not an admin.");
-        setLoading(false);
-        return;
-      }
-
-      // Save auth details
-      login(data.token, {
-        name: data.name,
-        email: data.email,
-        role: data.role,
-        _id: data._id,
-      });
-
-      // Store admin login status in localStorage
-      localStorage.setItem("adminLoggedIn", "true");
-
-      // Redirect to admin module
-      navigate("/admin-module");
     } catch (err) {
-      console.error("Login error:", err);
-      setError(err.response?.data?.message || "Unable to login.");
+      setError("Login failed: " + err.message);
     } finally {
       setLoading(false);
     }

@@ -132,9 +132,9 @@ const SemesterDatesForm = () => {
       {/* University Search Component */}
       <UniversitySearch
         onSearch={(university) => {
-          setUniversityId(university._id); // Set the university ID
-          setUniversityName(university.universityName); // Optionally set the university name
-          setMessage(""); // Clear any error message if a valid university is selected
+          setUniversityId(university._id);
+          setUniversityName(university.universityName);
+          setMessage("");
         }}
       />
 
@@ -154,56 +154,62 @@ const SemesterDatesForm = () => {
             : `Enter Semester Application Dates for ${universityName}`}
         </h2>
 
-        {Object.keys(formData).map((field, index) => (
-          <div key={index} style={{ marginBottom: "15px" }}>
-            <label style={{ display: "block", fontWeight: "bold" }}>
-              {field
-                .replace(/([A-Z])/g, " $1")
-                .replace(/^./, (str) => str.toUpperCase())}
-            </label>
-            <input
-              type={
-                [
-                  "fallStartDate",
-                  "fallEndDate",
-                  "springStartDate",
-                  "springEndDate",
-                  "fallOrientationWeekStart",
-                  "fallOrientationWeekEnd",
-                  "fallAcademicSemesterStart",
-                  "fallAcademicSemesterEnd",
-                  "springOrientationWeekStart",
-                  "springOrientationWeekEnd",
-                  "springAcademicSemesterStart",
-                  "springAcademicSemesterEnd",
-                ].includes(field)
-                  ? "date"
-                  : "text"
-              }
-              name={field}
-              value={formData[field]}
-              onChange={handleChange}
-              required={[
-                "fallStartDate",
-                "fallEndDate",
-                "springStartDate",
-                "springEndDate",
-                "fallOrientationWeekStart",
-                "fallOrientationWeekEnd",
-                "fallAcademicSemesterStart",
-                "fallAcademicSemesterEnd",
-                "springOrientationWeekStart",
-                "springOrientationWeekEnd",
-                "springAcademicSemesterStart",
-                "springAcademicSemesterEnd",
-              ].includes(field)}
-              style={{
-                padding: "10px",
-                width: "100%",
-                borderRadius: "4px",
-                border: "1px solid #ccc",
-              }}
-            />
+        {/* Grouped Fields for Start & End Dates in Rows */}
+        {[
+          ["fallStartDate", "fallEndDate"],
+          ["springStartDate", "springEndDate"],
+          ["fallOrientationWeekStart", "fallOrientationWeekEnd"],
+          ["fallAcademicSemesterStart", "fallAcademicSemesterEnd"],
+          ["springOrientationWeekStart", "springOrientationWeekEnd"],
+          ["springAcademicSemesterStart", "springAcademicSemesterEnd"],
+        ].map(([startField, endField], index) => (
+          <div
+            key={index}
+            style={{ display: "flex", gap: "20px", marginBottom: "15px" }}
+          >
+            {/* Start Date */}
+            <div style={{ flex: 1 }}>
+              <label style={{ display: "block", fontWeight: "bold" }}>
+                {startField
+                  .replace(/([A-Z])/g, " $1")
+                  .replace(/^./, (str) => str.toUpperCase())}
+              </label>
+              <input
+                type="date"
+                name={startField}
+                value={formData[startField]}
+                onChange={handleChange}
+                required
+                style={{
+                  padding: "10px",
+                  width: "100%",
+                  borderRadius: "4px",
+                  border: "1px solid #ccc",
+                }}
+              />
+            </div>
+
+            {/* End Date */}
+            <div style={{ flex: 1 }}>
+              <label style={{ display: "block", fontWeight: "bold" }}>
+                {endField
+                  .replace(/([A-Z])/g, " $1")
+                  .replace(/^./, (str) => str.toUpperCase())}
+              </label>
+              <input
+                type="date"
+                name={endField}
+                value={formData[endField]}
+                onChange={handleChange}
+                required
+                style={{
+                  padding: "10px",
+                  width: "100%",
+                  borderRadius: "4px",
+                  border: "1px solid #ccc",
+                }}
+              />
+            </div>
           </div>
         ))}
 

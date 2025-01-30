@@ -19,9 +19,9 @@ import AppliedUniversity from "../models/AppliedUniversity.js";
 const router = Router();
 
 // Shortlist routes
-router.post("/shortlist", protect, addToShortlist); // Add to shortlist
-router.get("/shortlisted", protect, getShortlistedUniversities); // Get all shortlisted universities
-router.delete("/shortlist/:id", protect, removeFromShortlist); // Remove from shortlist
+router.post("/shortlist", addToShortlist); // Add to shortlist
+router.get("/shortlisted", getShortlistedUniversities); // Get all shortlisted universities
+router.delete("/shortlist/:id", removeFromShortlist); // Remove from shortlist
 
 // University routes
 router.get("/", getAllUniversities); // Get all universities

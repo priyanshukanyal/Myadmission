@@ -72,14 +72,14 @@ function App() {
 
             {/* Admin Module Routes */}
             <Route
-              path="/admin-module/semester-application-dates"
+              path="/admin-module/view/semester-application-dates"
               element={<SemesterApplicationDatesPage />}
             />
-            <Route path="/admin-module" element={<SemesterDatesForm />}></Route>
             <Route
-              path="/admin-module/University-CRUD"
-              element={<UniversityCRUD />}
+              path="/admin-module/update/semester-application-dates"
+              element={<SemesterDatesForm />}
             ></Route>
+            <Route path="/admin-module" element={<UniversityCRUD />}></Route>
             <Route
               path="/admin-module/country-management"
               element={<CountryManager />}

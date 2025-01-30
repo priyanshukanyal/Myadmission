@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Button } from "react-router-dom";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
+import useShortlist from "../hooks/useShortlist.js";
+import { useAuth } from "../components/generalComponents/authContext.js";
 
 const UniversityDetail = () => {
   const { id } = useParams();
@@ -12,6 +14,22 @@ const UniversityDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAll, setShowAll] = useState(false);
+  const { shortlisted, addShortlist } = useShortlist();
+  const { state } = useAuth();
+  const { token } = state;
+
+  const handleShortlist = async (university) => {
+    try {
+      await axios.post(
+        "http://localhost:8111/api/universities/shortlist",
+        { universityId: university._id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      addShortlist(university); // Update UI instantly
+    } catch (error) {
+      console.error("Error shortlisting university:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchUniversity = async () => {
@@ -38,6 +56,19 @@ const UniversityDetail = () => {
       } catch (error) {
         setSemesterData(null);
         console.error("Error fetching semester application data:", error);
+      }
+    };
+
+    const handleShortlist = async (university) => {
+      try {
+        await axios.post(
+          "http://localhost:8111/api/universities/shortlist",
+          { universityId: university._id },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        addShortlist(university); // Update UI instantly
+      } catch (error) {
+        console.error("Error shortlisting university:", error);
       }
     };
     const fetchCountryData = async (countryName) => {
@@ -130,9 +161,41 @@ const UniversityDetail = () => {
 
   return (
     <div className="container py-5">
-      <button className="btn btn-secondary mb-4" onClick={() => navigate(-1)}>
-        <i className="bi bi-arrow-left"></i> Go Back
-      </button>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        {/* Go Back Button */}
+        <button
+          className="btn btn-secondary d-flex align-items-center gap-2 px-4 py-2 shadow-sm rounded-pill"
+          onClick={() => navigate(-1)}
+        >
+          <i className="bi bi-arrow-left fs-5"></i>
+          <span className="fw-bold">Go Back</span>
+        </button>
+
+        {/* Shortlist Button */}
+        <button
+          className={`btn d-flex align-items-center gap-2 px-4 py-2 shadow-sm rounded-pill 
+      ${
+        shortlisted.some((item) => item._id === university._id)
+          ? "btn-success"
+          : "btn-outline-primary"
+      }`}
+          onClick={() => handleShortlist(university)}
+        >
+          <i
+            className={`fs-5 
+      ${
+        shortlisted.some((item) => item._id === university._id)
+          ? "bi bi-check-circle-fill"
+          : "bi bi-plus-circle"
+      }`}
+          ></i>
+          <span className="fw-bold">
+            {shortlisted.some((item) => item._id === university._id)
+              ? "Shortlisted"
+              : "Add to Shortlist"}
+          </span>
+        </button>
+      </div>
 
       {/* University Details Card */}
       <div className="card shadow-lg mb-4">

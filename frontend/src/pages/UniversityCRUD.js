@@ -302,7 +302,7 @@ const UniversityCRUD = () => {
                   >
                     <option value="">Select a country</option>
                     {[
-                      "United States",
+                      "United States of America",
                       "Canada",
                       "United Kingdom",
                       "Australia",
