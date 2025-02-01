@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // Correct import
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -155,6 +156,7 @@ const UniversityCRUD = () => {
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchUniversities();
@@ -440,6 +442,14 @@ const UniversityCRUD = () => {
           </div>
           <button type="submit" className="btn btn-primary w-100">
             {editingId ? "Update" : "Add"} University
+          </button>
+          <button
+            className="btn btn-secondary w-100 mt-2"
+            onClick={() =>
+              navigate("/admin-module/update/semester-application-dates")
+            }
+          >
+            Go to Semester Update
           </button>
         </form>
       </div>

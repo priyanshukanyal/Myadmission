@@ -33,15 +33,31 @@ const UniversityList = () => {
     const fetchUniversities = async () => {
       try {
         setUniversities([]);
+
+        // Ensure universityName is sent as a string
+        const validFilters = Object.fromEntries(
+          Object.entries(filters).filter(
+            ([_, value]) => value !== null && value !== ""
+          )
+        );
+
+        if (
+          validFilters.universityName &&
+          typeof validFilters.universityName !== "string"
+        ) {
+          validFilters.universityName =
+            validFilters.universityName.universityName; // Extract string value
+        }
+
         const response = await axios.get(
-          "http://localhost:8111/api/Universities",
+          "http://localhost:8111/api/universities",
           {
-            params:
-              Object.keys(filters).length > 0
-                ? { filter: JSON.stringify(filters) }
-                : {},
+            params: validFilters.universityName
+              ? { filter: JSON.stringify(validFilters) }
+              : {},
           }
         );
+
         setUniversities(response.data);
       } catch (error) {
         console.error("Error fetching universities:", error.message);
@@ -77,7 +93,7 @@ const UniversityList = () => {
   const handleSearch = (universityName) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
-      universityName,
+      universityName: universityName || "", // Ensure it's a string
     }));
   };
 
@@ -100,7 +116,7 @@ const UniversityList = () => {
       matches = matches && uni.ranking <= 50;
     }
 
-    if (filters.universityName) {
+    if (filters.universityName && typeof filters.universityName === "string") {
       matches =
         matches &&
         uni.universityName

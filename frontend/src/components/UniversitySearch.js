@@ -14,9 +14,13 @@ const UniversitySearch = ({ onSearch }) => {
         `http://localhost:8111/api/universities/names?search=${searchQuery}`
       );
 
+      console.log("API Response:", response.data); // Log raw data
+
       const validatedData = response.data.filter(
         (item) => item && typeof item.universityName === "string"
       );
+
+      console.log("Validated Data:", validatedData); // Log cleaned-up data
 
       setUniversityList(validatedData);
     } catch (error) {
@@ -64,16 +68,17 @@ const UniversitySearch = ({ onSearch }) => {
       {loading && <p>Loading...</p>}
       <div>
         {universityList
-          .filter(
-            (filters) =>
-              typeof filters.universityName === "string" &&
-              filters.universityName
-                .toLowerCase()
-                .includes(searchQuery.toLowerCase())
-          )
+          .filter((item) => {
+            console.log("Filtering Item:", item); // Debugging: Check each item
+            return item && typeof item.universityName === "string"
+              ? item.universityName
+                  .toLowerCase()
+                  .includes(searchQuery.toLowerCase())
+              : false;
+          })
           .map((university) => (
             <div
-              key={university._id}
+              key={university._id || Math.random()} // Ensure unique keys
               style={{ cursor: "pointer", marginBottom: "5px" }}
               onClick={() => {
                 setSelectedUniversity(university);

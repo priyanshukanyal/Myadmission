@@ -23,9 +23,12 @@ const CountryManager = () => {
     cultural_support: "",
   });
   const [editingId, setEditingId] = useState(null);
-  const [costOfLivingError, setCostOfLivingError] = useState(""); // Error message state
+  const [costOfLivingError, setCostOfLivingError] = useState("");
 
-  // Fetch countries
+  useEffect(() => {
+    fetchCountries();
+  }, []);
+
   const fetchCountries = async () => {
     try {
       const res = await axios.get(API_URL);
@@ -35,11 +38,6 @@ const CountryManager = () => {
     }
   };
 
-  useEffect(() => {
-    fetchCountries();
-  }, []);
-
-  // Handle form change
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -54,11 +52,9 @@ const CountryManager = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if Cost of Living is valid
     if (
       formData.cost_of_living !== "" &&
       Number(formData.cost_of_living) < 10
@@ -98,13 +94,11 @@ const CountryManager = () => {
     }
   };
 
-  // Handle edit
   const handleEdit = (country) => {
     setFormData(country);
     setEditingId(country._id);
   };
 
-  // Handle delete
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${API_URL}/${id}`);
@@ -121,19 +115,52 @@ const CountryManager = () => {
       <ToastContainer />
       <h1 className="text-center fw-bold mb-4">🌍 Country Management</h1>
 
-      {/* Country Form */}
       <div className="card shadow p-4">
         <h2 className="fw-semibold">
           {editingId ? "✏️ Edit Country" : "➕ Add Country"}
         </h2>
         <form onSubmit={handleSubmit} className="row g-3">
           {Object.keys(formData).map((key) => (
-            <div className="col-md-6" key={key}>
+            <div
+              className={
+                [
+                  "work_opportunity",
+                  "work_permit",
+                  "visa_requirements",
+                  "healthcare",
+                  "climate",
+                  "cultural_support",
+                  "gdp",
+                  "tax_policy",
+                ].includes(key)
+                  ? "col-md-12"
+                  : "col-md-6"
+              }
+              key={key}
+            >
               <label className="form-label">
                 {key.replace(/_/g, " ").toUpperCase()}
               </label>
 
-              {key === "cost_of_living" ? (
+              {[
+                "work_opportunity",
+                "work_permit",
+                "visa_requirements",
+                "healthcare",
+                "climate",
+                "cultural_support",
+                "gdp",
+                "tax_policy",
+              ].includes(key) ? (
+                <textarea
+                  name={key}
+                  placeholder={`Enter ${key.replace(/_/g, " ")}`}
+                  value={formData[key]}
+                  onChange={handleChange}
+                  className="form-control form-control-lg w-100"
+                  rows="4"
+                ></textarea>
+              ) : key === "cost_of_living" ? (
                 <div className="input-group">
                   <span className="input-group-text">$</span>
                   <input
@@ -157,7 +184,6 @@ const CountryManager = () => {
                 />
               )}
 
-              {/* Show error message */}
               {key === "cost_of_living" && costOfLivingError && (
                 <small className="text-danger">{costOfLivingError}</small>
               )}
@@ -172,7 +198,6 @@ const CountryManager = () => {
         </form>
       </div>
 
-      {/* Country List */}
       <div className="card shadow mt-4 p-4">
         <h2 className="fw-semibold">📋 Countries List</h2>
         <div className="table-responsive">

@@ -69,6 +69,14 @@ const AdminHeader = () => {
         </Link>
         <nav style={{ display: "flex", alignItems: "center" }}>
           {/* Hoverable Semester Dates Dropdown */}
+          <NavLink
+            to="/admin-module"
+            style={({ isActive }) =>
+              isActive ? { ...linkStyle, ...activeStyle } : linkStyle
+            }
+          >
+            University Management
+          </NavLink>
           <div
             style={{
               position: "relative",

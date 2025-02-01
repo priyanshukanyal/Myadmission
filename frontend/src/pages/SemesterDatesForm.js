@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, navigate } from "react";
 import axios from "axios";
 import UniversitySearch from "../components/UniversitySearch"; // Import your search component
 
@@ -233,7 +233,6 @@ const SemesterDatesForm = () => {
   );
 };
 
-//hello
 export default SemesterDatesForm;
 
 // import React, { useState, useEffect } from "react";
