@@ -133,9 +133,35 @@ const UniversityFilter = ({ onApplyFilters }) => {
           value={filters.country}
         >
           <option value="">Select Country</option>
-          <option value="USA">USA</option>
+          <option value="United States of America">USA</option>
           <option value="Canada">Canada</option>
-          <option value="UK">UK</option>
+          <option value="United Kingdom">UK</option>
+          <option value="Australia">Australia</option>
+          <option value="Germany">Germany</option>
+          <option value="New Zealand">New Zealand</option>
+          <option value="Ireland">Ireland</option>
+          <option value="United Arab Emirates">UAE</option>
+          <option value="Singapore">Singapore</option>
+          <option value="France">France</option>
+          <option value="Netherlands">Netherlands</option>
+          <option value="Sweden">Sweden</option>
+          <option value="Italy">Italy</option>
+          <option value="Finland">Finland</option>
+          <option value="Denmark">Denmark</option>
+          <option value="Norway">Norway</option>
+          <option value="Spain">Spain</option>
+          <option value="Switzerland">Switzerland</option>
+          <option value="Poland">Poland</option>
+          <option value="Russia">Russia</option>
+          <option value="Japan">Japan</option>
+          <option value="South Korea">South Korea</option>
+          <option value="Malaysia">Malaysia</option>
+          <option value="China">China</option>
+          <option value="Turkey">Turkey</option>
+          <option value="Thailand">Thailand</option>
+          <option value="Austria">Austria</option>
+          <option value="Belgium">Belgium</option>
+          <option value="Czech Republic">Czech Republic</option>
         </Form.Select>
       </Form.Group>
 
