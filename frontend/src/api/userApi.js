@@ -5,11 +5,23 @@ const API_URL = "http://localhost:8111/api";
 
 // 1. Login User
 export const loginUser = async (email, password) => {
-  const response = await axios.post(`${API_URL}/users/login`, {
-    email,
-    password,
-  });
-  return response.data;
+  try {
+    const response = await fetch("http://localhost:8111/api/users/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Invalid credentials");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
 };
 
 // 2. Register User with a default role (if not provided)

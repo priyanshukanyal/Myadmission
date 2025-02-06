@@ -15,7 +15,7 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(""); // Clear errors
+    setError(""); // Clear previous errors
 
     if (!email || !password) {
       setError("Please fill in both fields");
@@ -25,12 +25,12 @@ const Login = () => {
     setLoading(true);
     try {
       const response = await loginUser(email, password);
-      console.log("Login Response:", response); // Log the entire response
+      console.log("Login Response:", response); // Debugging log
 
-      const { token, user } = response;
-      if (token && user) {
-        login(token, user);
-        if (user.role === "Admin" || user.role === "Super Admin") {
+      // Ensure response contains valid token and user data
+      if (response?.token && response?.email) {
+        login(response.token, response);
+        if (response.role === "Admin" || response.role === "Super Admin") {
           navigate("/admin-module");
         } else {
           navigate("/");
@@ -39,22 +39,21 @@ const Login = () => {
         setError("Login failed: Missing token or user data.");
       }
     } catch (err) {
-      setError("Login failed: " + err.message);
+      console.error("Login Error:", err); // Log actual error for debugging
+      setError("Login failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  const togglePasswordVisibility = () => {
-    setPasswordVisible((prev) => !prev);
-  };
-
   return (
-    <div>
+    <div className="p-3">
       <h3 className="text-center mb-3">Admin Login</h3>
       {error && <Alert variant="danger">{error}</Alert>}
+
       <Form onSubmit={handleLogin}>
-        <Form.Group className="mb-3" controlId="formBasicEmail">
+        {/* Email Input */}
+        <Form.Group className="mb-3">
           <Form.Label>Email</Form.Label>
           <Form.Control
             type="email"
@@ -65,12 +64,13 @@ const Login = () => {
           />
         </Form.Group>
 
-        <Form.Group className="mb-3" controlId="formBasicPassword">
+        {/* Password Input */}
+        <Form.Group className="mb-3">
           <Form.Label>Password</Form.Label>
-          <div className="d-flex">
+          <div className="d-flex align-items-center">
             <Form.Control
               type={passwordVisible ? "text" : "password"}
-              placeholder="Password"
+              placeholder="Enter password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -78,7 +78,7 @@ const Login = () => {
             <Button
               variant="link"
               type="button"
-              onClick={togglePasswordVisibility}
+              onClick={() => setPasswordVisible(!passwordVisible)}
               className="ms-2"
             >
               {passwordVisible ? "Hide" : "Show"}
@@ -86,6 +86,7 @@ const Login = () => {
           </div>
         </Form.Group>
 
+        {/* Submit Button */}
         <Button
           variant="primary"
           type="submit"
