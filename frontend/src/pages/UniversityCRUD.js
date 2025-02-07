@@ -147,6 +147,7 @@ const initialFormState = {
   placement: "",
   ranking: "",
   fees: "",
+  specialCourses: "",
   programs: { ...initialPrograms }, // Ensure programs are initialized
 };
 

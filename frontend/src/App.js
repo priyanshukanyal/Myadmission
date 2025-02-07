@@ -14,7 +14,7 @@ import ShortlistedUniversities from "./pages/Shortlisted.js";
 import Applied from "./pages/applied.js";
 import FAQ from "./pages/FAQ.js";
 import Scholarships from "./pages/Scholarships.js";
-import StudentProfile from "./components/StudentProfile.js";
+import StudentApplicationForm from "./pages/StudentApplicationForm.js";
 import SemesterDatesForm from "./pages/SemesterDatesForm.js";
 import AdminHeader from "./components/AdminHeader.js";
 import AdminFooter from "./components/AdminFooter.js";
@@ -66,7 +66,7 @@ function App() {
             />
             <Route path="/applied" element={<Applied />} />
             <Route path="/university/:id" element={<UniversityDetail />} />
-            <Route path="/profile" element={<StudentProfile />} />
+            <Route path="/profile" element={<StudentApplicationForm />} />
             <Route path="/FAQ" element={<FAQ />} />
             <Route path="/scholarships" element={<Scholarships />} />
 

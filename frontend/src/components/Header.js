@@ -80,7 +80,7 @@ const Header = () => {
                 align="end"
                 className="fw-semibold"
               >
-                <NavDropdown.Item as={Link} to="/profile">
+                <NavDropdown.Item as={Link} to="/Profile">
                   Update Profile
                 </NavDropdown.Item>
                 {isAdmin && (

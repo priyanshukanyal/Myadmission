@@ -148,7 +148,15 @@ const UniversityDetail = () => {
     {
       label: "Website",
       value: (
-        <a href={university.website} target="_blank" rel="noreferrer">
+        <a
+          href={
+            university.website.startsWith("http")
+              ? university.website
+              : `https://${university.website}`
+          }
+          target="_blank"
+          rel="noreferrer"
+        >
           {university.website}
         </a>
       ),
