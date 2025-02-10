@@ -10,7 +10,7 @@ const UniversityFilter = ({ onApplyFilters }) => {
     actScore: "",
     country: "",
     city: "",
-    program: "",
+    specialCourses: "",
     expense: "",
     universityType: "",
   });
@@ -184,16 +184,27 @@ const UniversityFilter = ({ onApplyFilters }) => {
 
       {/* Program Filter */}
       <Form.Group className="mb-3">
-        <Form.Label>Program</Form.Label>
+        <Form.Label>Special Courses</Form.Label>
         <Form.Select
-          name="program"
+          name="specialCourses"
           onChange={handleFilterChange}
-          value={filters.program}
+          value={filters.specialCourses}
         >
-          <option value="">Select Program</option>
-          <option value="Engineering">Engineering</option>
-          <option value="Business">Business</option>
-          <option value="Medicine">Medicine</option>
+          <option value="">Select course</option>
+          <option value="Engineering & Technology">
+            Engineering & Technology
+          </option>
+          <option value="Business & Management">Business & Management</option>
+          <option value="Health & Medical Sciences">
+            Health & Medical Sciences
+          </option>
+          <option value="Science & Research">Science & Research</option>
+          <option value="Arts, Humanities & Social Sciences">
+            Arts, Humanities & Social Sciences
+          </option>
+          <option value="Law & Legal Studies">Law & Legal Studies</option>
+          <option value="Hospitality & Tourism">Hospitality & Tourism</option>
+          <option value="Architecture & Design">Architecture & Design</option>
         </Form.Select>
       </Form.Group>
 

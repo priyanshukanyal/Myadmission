@@ -138,9 +138,9 @@ export const getAllUniversities = async (req, res) => {
     }
 
     // Apply 'program' filter if it exists
-    if (filter.program) {
-      mongoFilters.program = {
-        $regex: filter.program,
+    if (filter.specialCourses) {
+      mongoFilters.specialCourses = {
+        $regex: filter.specialCourses,
         $options: "i", // Case-insensitive match
       };
     }

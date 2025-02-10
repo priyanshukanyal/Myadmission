@@ -4,6 +4,10 @@ import UniversitySearch from "../components/UniversitySearch"; // Import your se
 
 const SemesterDatesForm = () => {
   const [formData, setFormData] = useState({
+    fallApplicationStartDate: "",
+    fallApplicationEndDate: "",
+    springApplicationStartDate: "",
+    springApplicationEndDate: "",
     fallStartDate: "",
     fallEndDate: "",
     springStartDate: "",
@@ -42,9 +46,16 @@ const SemesterDatesForm = () => {
         setSemesterDates(response.data);
         setFormData({
           fallStartDate: response.data.fallStartDate?.slice(0, 10) || "",
+          fallApplicationStartDate:
+            response.data.fallStartDate?.slice(0, 10) || "",
           fallEndDate: response.data.fallEndDate?.slice(0, 10) || "",
+          fallApplicationEndDate: response.data.fallEndDate?.slice(0, 10) || "",
           springStartDate: response.data.springStartDate?.slice(0, 10) || "",
+          springApplicationStartDate:
+            response.data.springStartDate?.slice(0, 10) || "",
           springEndDate: response.data.springEndDate?.slice(0, 10) || "",
+          springApplicationEndDate:
+            response.data.springEndDate?.slice(0, 10) || "",
           fallOrientationWeekStart:
             response.data.fallOrientationWeekStart?.slice(0, 10) || "",
           fallOrientationWeekEnd:
@@ -71,6 +82,10 @@ const SemesterDatesForm = () => {
       } catch (error) {
         setSemesterDates(null); // No existing data
         setFormData({
+          fallApplicationStartDate: "",
+          fallApplicationEndDate: "",
+          springApplicationStartDate: "",
+          springApplicationEndDate: "",
           fallStartDate: "",
           fallEndDate: "",
           springStartDate: "",
@@ -157,7 +172,9 @@ const SemesterDatesForm = () => {
         {/* Grouped Fields for Start & End Dates in Rows */}
         {[
           ["fallStartDate", "fallEndDate"],
+          ["fallApplicationStartDate", "fallApplicationEndDate"],
           ["springStartDate", "springEndDate"],
+          ["springApplicationStartDate", "springApplicationEndDate"],
           ["fallOrientationWeekStart", "fallOrientationWeekEnd"],
           ["fallAcademicSemesterStart", "fallAcademicSemesterEnd"],
           ["springOrientationWeekStart", "springOrientationWeekEnd"],

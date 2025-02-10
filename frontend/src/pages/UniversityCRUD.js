@@ -369,6 +369,33 @@ const UniversityCRUD = () => {
                     </div>
                   </div>
                 </div>
+              ) : field === "specialCourses" ? (
+                <div className="mb-3 col-md-4">
+                  <label className="form-label fw-bold">Special Courses</label>
+                  <select
+                    className="form-control"
+                    name="specialCourses"
+                    value={form.specialCourses || ""}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="">Select a Course</option>
+                    {[
+                      "Engineering & Technology",
+                      "Business & Management",
+                      "Health & Medical Sciences",
+                      "Science & Research",
+                      "Arts, Humanities & Social Sciences",
+                      "Law & Legal Studies",
+                      "Hospitality & Tourism",
+                      "Architecture & Design",
+                    ].map((course) => (
+                      <option key={course} value={course}>
+                        {course}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               ) : (
                 <div className="mb-3 col-md-4" key={field}>
                   <label className="form-label fw-bold">

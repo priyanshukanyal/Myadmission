@@ -274,6 +274,46 @@ const UniversityDetail = () => {
                   {new Date(semesterData.springStartDate).toLocaleDateString()}{" "}
                   - {new Date(semesterData.springEndDate).toLocaleDateString()}
                 </p>
+                <p>
+                  <strong>Fall academic Date:</strong>{" "}
+                  {semesterData.fallAcademicSemesterStart
+                    ? `${new Date(
+                        semesterData.fallAcademicSemesterStart
+                      ).toLocaleDateString()} - ${new Date(
+                        semesterData.fallAcademicSemesterEnd
+                      ).toLocaleDateString()}`
+                    : "N/A"}
+                </p>
+                <p>
+                  <strong>Spring academic Date:</strong>{" "}
+                  {semesterData.springAcademicSemesterStart
+                    ? `${new Date(
+                        semesterData.springAcademicSemesterStart
+                      ).toLocaleDateString()} - ${new Date(
+                        semesterData.springAcademicSemesterEnd
+                      ).toLocaleDateString()}`
+                    : "N/A"}
+                </p>
+                <p>
+                  <strong>Spring Application Date:</strong>{" "}
+                  {semesterData.springApplicationStartDate
+                    ? `${new Date(
+                        semesterData.springApplicationStartDate
+                      ).toLocaleDateString()} - ${new Date(
+                        semesterData.springApplicationEndDate
+                      ).toLocaleDateString()}`
+                    : "N/A"}
+                </p>
+                <p>
+                  <strong>Fall Application Date:</strong>{" "}
+                  {semesterData.fallApplicationStartDate
+                    ? `${new Date(
+                        semesterData.fallApplicationStartDate
+                      ).toLocaleDateString()} - ${new Date(
+                        semesterData.fallApplicationEndDate
+                      ).toLocaleDateString()}`
+                    : "N/A"}
+                </p>
               </div>
               <div className="col-md-6">
                 <p>
@@ -310,6 +350,9 @@ const UniversityDetail = () => {
                   <strong>Placement:</strong> {semesterData.placement || "N/A"}
                 </p>
               </div>
+              <p>
+                <strong>Placement:</strong> {semesterData.placement || "N/A"}
+              </p>
             </div>
           ) : (
             <p>No semester application data available for this university.</p>

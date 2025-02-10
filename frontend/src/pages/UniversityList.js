@@ -194,16 +194,14 @@ const UniversityList = () => {
     <Container className="university-list-page">
       <Row>
         <Col md={3} className="university-filter-wrapper mb-4">
-          <Card className="p-3 shadow-sm">
-            <UniversityFilter
-              onApplyFilters={(filter) => {
-                setFilters((prevFilters) => ({
-                  ...prevFilters,
-                  ...filter,
-                }));
-              }}
-            />
-          </Card>
+          <UniversityFilter
+            onApplyFilters={(filter) => {
+              setFilters((prevFilters) => ({
+                ...prevFilters,
+                ...filter,
+              }));
+            }}
+          />
         </Col>
         <Col md={9}>
           <h1 className="page-title mb-4 text-primary">

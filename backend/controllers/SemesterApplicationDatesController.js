@@ -6,6 +6,10 @@ export const createOrUpdateSemesterDates = async (req, res) => {
   try {
     const {
       universityId,
+      fallApplicationStartDate,
+      fallApplicationEndDate,
+      springApplicationStartDate,
+      springApplicationEndDate,
       fallStartDate,
       fallEndDate,
       fallOrientationWeekStart,
@@ -33,6 +37,10 @@ export const createOrUpdateSemesterDates = async (req, res) => {
     const semesterDates = await SemesterApplicationDates.findOneAndUpdate(
       { university: universityId },
       {
+        fallApplicationStartDate,
+        fallApplicationEndDate,
+        springApplicationStartDate,
+        springApplicationEndDate,
         fallStartDate,
         fallEndDate,
         fallOrientationWeekStart,
@@ -66,7 +74,7 @@ export const getAllSemesterDates = async (req, res) => {
     const semesterDates = await SemesterApplicationDates.find()
       .populate("university", "universityName") // Only populate the university name
       .select(
-        "fallStartDate fallEndDate fallOrientationWeekStart fallOrientationWeekEnd fallAcademicSemesterStart fallAcademicSemesterEnd springStartDate springEndDate springOrientationWeekStart springOrientationWeekEnd springAcademicSemesterStart springAcademicSemesterEnd aboutUniversity visa weather security placement university"
+        "fallStartDate fallEndDate fallOrientationWeekStart fallOrientationWeekEnd fallAcademicSemesterStart fallAcademicSemesterEnd springStartDate springEndDate springOrientationWeekStart springOrientationWeekEnd springAcademicSemesterStart springAcademicSemesterEnd aboutUniversity visa weather security placement university fallApplicationStartDate fallApplicationEndDate springApplicationStartDate springApplicationEndDate"
       ); // Select all relevant fields
 
     if (!semesterDates.length) {
