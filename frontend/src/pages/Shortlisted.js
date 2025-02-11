@@ -16,25 +16,35 @@ const Shortlisted = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+  const [isRemoving, setIsRemoving] = useState(false); // State for tracking removal loading
   const { state } = useAuth();
   const { token } = state;
 
-  // Fetch shortlisted universities
   useEffect(() => {
     const fetchShortlistedUniversities = async () => {
-      if (!token) return;
+      if (!token || !state.user?._id) {
+        console.error("Missing token or user ID");
+        return;
+      }
 
       try {
         setIsLoading(true);
         const response = await axios.get(
-          "http://localhost:8111/api/universities/shortlisted",
+          `http://localhost:8111/api/universities/shortlisted/${state.user._id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
-        console.log("Shortlisted universities:", response.data);
+        console.log("Shortlisted universities:", response.data); // Debugging output
 
-        if (Array.isArray(response.data)) {
-          setShortlisted(response.data);
+        // Check if the response contains the correct array or just a single shortlisted university
+        if (
+          response.data?.shortlistedUniversities &&
+          Array.isArray(response.data.shortlistedUniversities)
+        ) {
+          setShortlisted(response.data.shortlistedUniversities);
+        } else if (response.data?.shortlist) {
+          // If a single university was returned
+          setShortlisted([response.data.shortlist]);
         } else {
           console.warn("Unexpected response format:", response.data);
           setShortlisted([]);
@@ -51,30 +61,46 @@ const Shortlisted = () => {
     };
 
     fetchShortlistedUniversities();
-  }, [token]);
+  }, [token, state.user?._id]);
 
-  // Remove university from shortlist
   const handleRemoveShortlist = async (universityId) => {
-    if (!token || !universityId) return;
+    if (!token || !universityId) {
+      console.error("Missing token or university ID", { token, universityId });
+      return;
+    }
 
     try {
+      setIsRemoving(true); // Set loading to true
+      console.log("Removing university with ID:", universityId);
+
+      const userId = state.user._id;
+
+      // Ensure you're passing the correct URL and params
       await axios.delete(
-        `http://localhost:8111/api/universities/shortlist/${universityId}`,
+        `http://localhost:8111/api/universities/shortlist/${userId}/${universityId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       console.log("Successfully removed university:", universityId);
 
-      // Update state to remove the university from the list
+      // Update the state
       setShortlisted((prevShortlist) =>
-        prevShortlist.filter((uni) => uni.university?._id !== universityId)
+        prevShortlist.filter((item) => item.university._id !== universityId)
       );
 
       setSuccessMessage("University removed from shortlist.");
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (error) {
-      console.error("Error removing shortlisted university:", error);
-      setError("Failed to remove the university. Please try again.");
+      console.error(
+        "Error removing shortlisted university:",
+        error.response?.data || error
+      );
+      setError(
+        error.response?.data?.message ||
+          "Failed to remove the university. Please try again."
+      );
+    } finally {
+      setIsRemoving(false); // Reset loading state
     }
   };
 
@@ -113,7 +139,9 @@ const Shortlisted = () => {
       )}
 
       <Row>
-        {shortlisted.map(({ university, _id }) => {
+        {shortlisted.map((item) => {
+          const { university, _id } = item; // Destructure university and _id from item
+
           if (!university) return null; // Skip if university data is missing
 
           return (
@@ -135,9 +163,14 @@ const Shortlisted = () => {
                   </Card.Text>
                   <Button
                     variant="danger"
-                    onClick={() => handleRemoveShortlist(university._id)}
+                    onClick={() => handleRemoveShortlist(university._id)} // Pass university._id here
+                    disabled={isRemoving} // Disable button during the removal process
                   >
-                    Remove
+                    {isRemoving ? (
+                      <Spinner animation="border" size="sm" />
+                    ) : (
+                      "Remove"
+                    )}
                   </Button>
                 </Card.Body>
               </Card>

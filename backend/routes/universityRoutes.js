@@ -14,14 +14,16 @@ import {
   removeFromShortlist,
 } from "../controllers/universityControllers.js";
 import protect from "../middleware/authMiddleware.js";
-import AppliedUniversity from "../models/AppliedUniversity.js";
+import AppliedUniversity from "../models/Applied.js";
 
 const router = Router();
 
-// Shortlist routes
-router.post("/shortlist", addToShortlist); // Add to shortlist
-router.get("/shortlisted", getShortlistedUniversities); // Get all shortlisted universities
-router.delete("/shortlist/:id", removeFromShortlist); // Remove from shortlist
+// Add to shortlist
+router.post("/shortlist", addToShortlist);
+// Get shortlisted universities for a specific user
+router.get("/shortlisted/:userId", getShortlistedUniversities);
+// Remove from shortlist (user-specific)
+router.delete("/shortlist/:userId/:universityId", removeFromShortlist);
 
 // University routes
 router.get("/", getAllUniversities); // Get all universities

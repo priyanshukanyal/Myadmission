@@ -1,6 +1,6 @@
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
-
+import { checkAndSendNotifications } from "../utils/notificationHelper.js";
 // Generate JWT Token
 const generateToken = (user) => {
   return jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
@@ -62,6 +62,8 @@ export const loginUser = async (req, res) => {
     if (!user || !(await user.matchPassword(password))) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
+    // Check and generate notifications
+    await checkAndSendNotifications(user._id);
 
     res.json({
       token: generateToken(user),

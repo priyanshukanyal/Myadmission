@@ -11,7 +11,7 @@ import ContactForm from "./pages/Contact.js";
 import StaticFooter from "./components/StaticFooter.js";
 import UniversityDetail from "./pages/UniversityDetail.js";
 import ShortlistedUniversities from "./pages/Shortlisted.js";
-import Applied from "./pages/applied.js";
+import ApplySection from "./pages/applied.js";
 import FAQ from "./pages/FAQ.js";
 import Scholarships from "./pages/Scholarships.js";
 import StudentApplicationForm from "./pages/StudentApplicationForm.js";
@@ -22,6 +22,7 @@ import SemesterApplicationDatesPage from "./components/SemesterApplication";
 import UniversityCRUD from "./pages/UniversityCRUD.js";
 import AdminLogin from "./pages/adminLogin.js"; // Import AdminLogin component
 import CountryManager from "./pages/CountryManager.js";
+import Notifications from "./pages/Notifications.js";
 function Layout({ children }) {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin-module");
@@ -64,11 +65,12 @@ function App() {
                 />
               }
             />
-            <Route path="/applied" element={<Applied />} />
+            <Route path="/applied" element={<ApplySection />} />
             <Route path="/university/:id" element={<UniversityDetail />} />
             <Route path="/profile" element={<StudentApplicationForm />} />
             <Route path="/FAQ" element={<FAQ />} />
             <Route path="/scholarships" element={<Scholarships />} />
+            <Route path="/notifications" element={<Notifications />} />
 
             {/* Admin Module Routes */}
             <Route

@@ -10,6 +10,8 @@ import studentProfileRoutes from "./routes/studentProfileRoutes.js";
 import adminModuleRoutes from "./routes/SemesterApplicationDatesRoutes.js";
 import countryRoutes from "./routes/countryRoutes.js";
 import applicationRoutes from "./routes/applicationRoutes.js";
+import appliedRoutes from "./routes/appliedRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
 // Load environment variables
 dotenv.config();
 
@@ -36,6 +38,8 @@ app.use("/api", studentProfileRoutes);
 app.use("/api/admin-module", adminModuleRoutes);
 app.use("/api/countries", countryRoutes);
 app.use("/api/application", applicationRoutes);
+app.use("/api/applied", appliedRoutes);
+app.use("/api/notifications", notificationRoutes);
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

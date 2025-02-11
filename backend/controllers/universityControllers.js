@@ -5,22 +5,27 @@ import ShortlistedUniversity from "../models/ShortlistedUniversity.js";
 // Add a university to the shortlist
 export const addToShortlist = async (req, res) => {
   try {
-    const { universityId } = req.body;
+    const { userId, universityId } = req.body;
 
+    // Validate userId and universityId
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Invalid User ID." });
+    }
     if (!universityId || !mongoose.Types.ObjectId.isValid(universityId)) {
       return res.status(400).json({ message: "Invalid University ID." });
     }
 
-    // Ensure the university exists
-    const universityExists = await University.findById(universityId);
-    if (!universityExists) {
+    // Fetch university details
+    const university = await University.findById(universityId).lean();
+    if (!university) {
       return res.status(404).json({ message: "University not found." });
     }
 
     // Check if already shortlisted
     const existingShortlist = await ShortlistedUniversity.findOne({
-      university: universityId,
-    });
+      user: userId,
+      university: universityId, // Use correct field `university`
+    }).lean();
 
     if (existingShortlist) {
       return res
@@ -28,10 +33,12 @@ export const addToShortlist = async (req, res) => {
         .json({ message: "University already shortlisted." });
     }
 
-    // Add to shortlist
+    // ✅ Add university to the shortlist
     const newShortlist = new ShortlistedUniversity({
-      university: universityId,
+      user: userId,
+      university: universityId, // FIXED
     });
+
     await newShortlist.save();
 
     res.status(201).json({
@@ -45,16 +52,18 @@ export const addToShortlist = async (req, res) => {
       .json({ message: "Internal Server Error", error: error.message });
   }
 };
-
-// Get all shortlisted universities
+// Get all shortlisted universities for a specific user
 export const getShortlistedUniversities = async (req, res) => {
   try {
-    const shortlisted = await ShortlistedUniversity.find()
-      .populate({
-        path: "university",
-        select: "universityName location image",
-      })
-      .lean(); // Convert Mongoose documents to plain objects
+    const { userId } = req.params;
+
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Invalid User ID." });
+    }
+
+    const shortlisted = await ShortlistedUniversity.find({
+      user: userId,
+    }).lean();
 
     res.status(200).json({ shortlistedUniversities: shortlisted });
   } catch (error) {
@@ -64,31 +73,42 @@ export const getShortlistedUniversities = async (req, res) => {
       .json({ message: "Internal Server Error", error: error.message });
   }
 };
-
 // Remove a university from the shortlist
 export const removeFromShortlist = async (req, res) => {
   try {
-    const { universityId } = req.params;
+    const { userId, universityId } = req.params;
 
-    if (!universityId || !mongoose.Types.ObjectId.isValid(universityId)) {
+    // Validate userId and universityId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Invalid User ID." });
+    }
+    if (!mongoose.Types.ObjectId.isValid(universityId)) {
       return res.status(400).json({ message: "Invalid University ID." });
     }
 
-    const result = await ShortlistedUniversity.findOneAndDelete({
-      university: universityId,
+    // Check if the university exists in the shortlist
+    const existingShortlist = await ShortlistedUniversity.findOne({
+      user: userId,
+      university: universityId, // Ensure this matches schema field
     });
 
-    if (!result) {
+    if (!existingShortlist) {
       return res
         .status(404)
-        .json({ message: "University not found in shortlist." });
+        .json({ message: "University not found in shortlist for the user." });
     }
+
+    // ✅ Delete the shortlisted university
+    await ShortlistedUniversity.deleteOne({
+      user: userId,
+      university: universityId,
+    });
 
     res
       .status(200)
       .json({ message: "University removed from shortlist successfully." });
   } catch (error) {
-    console.error("Error removing shortlisted university:", error);
+    console.error("Error removing from shortlist:", error);
     res
       .status(500)
       .json({ message: "Internal Server Error", error: error.message });

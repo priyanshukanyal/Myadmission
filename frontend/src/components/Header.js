@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Navbar,
   Nav,
@@ -6,15 +6,35 @@ import {
   Button,
   NavDropdown,
   Image,
+  Badge,
 } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../components/generalComponents/authContext";
+import { Bell } from "react-bootstrap-icons"; // Importing Bell icon
 import logo from "../assets/logo.png"; // Ensure logo path is correct
 
 const Header = () => {
   const { state, logout, isAdmin } = useAuth();
   const { token, user } = state;
   const navigate = useNavigate();
+
+  const [notifications, setNotifications] = useState(0); // Notification count
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const response = await fetch("/api/notifications");
+        const data = await response.json();
+        setNotifications(data.length); // Count unread notifications
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
+    };
+
+    if (token) {
+      fetchNotifications();
+    }
+  }, [token]);
 
   const handleLogout = () => {
     logout();
@@ -70,6 +90,26 @@ const Header = () => {
               </Nav.Link>
             )}
           </Nav>
+
+          {/* Notification Bell Icon */}
+          {token && (
+            <Nav.Link
+              as={Link}
+              to="/notifications"
+              className="position-relative me-3"
+            >
+              <Bell size={24} className="text-primary" />
+              {notifications > 0 && (
+                <Badge
+                  pill
+                  bg="danger"
+                  className="position-absolute top-0 start-100 translate-middle"
+                >
+                  {notifications}
+                </Badge>
+              )}
+            </Nav.Link>
+          )}
 
           {/* Profile and Auth Section */}
           <Nav className="ms-auto">

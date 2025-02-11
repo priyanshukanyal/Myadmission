@@ -23,11 +23,13 @@ const UniversityList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState("list");
   const [sortCriteria, setSortCriteria] = useState("ranking");
+
   const { state } = useAuth();
-  const { token } = state;
-  const { shortlisted = [], addShortlist } = useShortlist();
+  const { token, user } = state; // Get userId from auth state
+  const { shortlisted, addShortlist, removeShortlist } = useShortlist();
 
   const universitiesPerPage = 10;
+  const startIndex = (currentPage - 1) * universitiesPerPage;
 
   useEffect(() => {
     const fetchUniversities = async () => {
@@ -68,27 +70,10 @@ const UniversityList = () => {
   }, [filters]);
 
   useEffect(() => {
-    const fetchShortlisted = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:8111/api/universities/shortlisted",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        addShortlist(response.data);
-      } catch (error) {
-        console.error(
-          "Error fetching shortlisted universities:",
-          error.message
-        );
-      }
-    };
-
-    if (token) {
-      fetchShortlisted();
+    if (token && user?._id) {
+      addShortlist(); // Fetch shortlisted universities (from `useShortlist`)
     }
-  }, [token]);
+  }, [token, user?._id]);
 
   const handleSearch = (universityName) => {
     setFilters((prevFilters) => ({
@@ -128,22 +113,12 @@ const UniversityList = () => {
   });
 
   const handleShortlist = async (university) => {
-    try {
-      const response = await axios.post(
-        "http://localhost:8111/api/universities/shortlist",
-        { universityId: university._id },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-    } catch (error) {
-      console.error("Error shortlisting university:", error);
+    if (shortlisted.some((item) => item.universityId === university._id)) {
+      await removeShortlist(university._id);
+    } else {
+      await addShortlist(university);
     }
   };
-
-  const startIndex = (currentPage - 1) * universitiesPerPage;
-  const currentUniversities = universities.slice(
-    startIndex,
-    startIndex + universitiesPerPage
-  );
 
   const handleNext = () => {
     if (currentPage * universitiesPerPage < universities.length) {
@@ -261,7 +236,10 @@ const UniversityList = () => {
           </ButtonGroup>
 
           <Row className={viewMode === "grid" ? "g-4" : ""}>
-            {currentUniversities.length > 0 ? (
+            {sortedUniversities.slice(
+              startIndex,
+              startIndex + universitiesPerPage
+            ).length > 0 ? (
               sortedUniversities
                 .slice(startIndex, startIndex + universitiesPerPage)
                 .map((uni) => (
@@ -313,7 +291,9 @@ const UniversityList = () => {
                               variant="outline-primary"
                               onClick={() => handleShortlist(uni)}
                             >
-                              {shortlisted.some((item) => item._id === uni._id)
+                              {shortlisted.some(
+                                (item) => item.universityId === uni._id
+                              )
                                 ? "Shortlisted"
                                 : "Add to Shortlist"}
                             </Button>
