@@ -29,7 +29,6 @@ const ApplySection = () => {
   useEffect(() => {
     const debouncedSearch = debounce(() => {
       if (searchTerm) {
-        searchUniversities();
       } else {
         setUniversities([]);
       }
@@ -52,22 +51,6 @@ const ApplySection = () => {
     } catch (err) {
       console.error("Error fetching applied universities:", err);
       setError("Failed to load applied universities.");
-    }
-  };
-
-  const searchUniversities = async () => {
-    try {
-      setError("");
-      setLoading(true);
-      const res = await axios.get(
-        `http://localhost:8111/api/universities?search=${searchTerm}`
-      );
-      setUniversities(res.data);
-    } catch (err) {
-      console.error("Error searching universities:", err);
-      setError("Error searching universities.");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -122,46 +105,7 @@ const ApplySection = () => {
 
   return (
     <div className="container mt-4">
-      <h3>Apply to a University</h3>
-
       {error && <Alert variant="danger">{error}</Alert>}
-
-      {/* Search Bar */}
-      <div className="d-flex mb-3">
-        <Form.Control
-          type="text"
-          placeholder="Search university"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
-
-      {/* Search Results */}
-      {loading ? (
-        <Spinner animation="border" />
-      ) : (
-        universities.length > 0 && (
-          <ListGroup>
-            {universities.map((uni) => (
-              <ListGroup.Item
-                key={uni._id}
-                className="d-flex justify-content-between"
-              >
-                {uni.universityName} ({uni.country})
-                <Button
-                  variant="success"
-                  onClick={() => {
-                    setSelectedUniversity(uni);
-                    setShowModal(true);
-                  }}
-                >
-                  Apply
-                </Button>
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
-        )
-      )}
 
       {/* Applied Universities */}
       <h3 className="mt-4">Applied Universities</h3>

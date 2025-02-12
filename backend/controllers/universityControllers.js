@@ -24,7 +24,7 @@ export const addToShortlist = async (req, res) => {
     // Check if already shortlisted
     const existingShortlist = await ShortlistedUniversity.findOne({
       user: userId,
-      university: universityId, // Use correct field `university`
+      university: universityId,
     }).lean();
 
     if (existingShortlist) {
@@ -36,14 +36,20 @@ export const addToShortlist = async (req, res) => {
     // ✅ Add university to the shortlist
     const newShortlist = new ShortlistedUniversity({
       user: userId,
-      university: universityId, // FIXED
+      university: universityId,
     });
 
     await newShortlist.save();
 
+    // 🔹 Populate ONLY `universityName` and `country`
+    const populatedShortlist = await newShortlist.populate(
+      "university",
+      "universityName country"
+    );
+
     res.status(201).json({
       message: "University shortlisted successfully.",
-      shortlist: newShortlist,
+      shortlist: populatedShortlist,
     });
   } catch (error) {
     console.error("Error adding to shortlist:", error);
@@ -52,6 +58,7 @@ export const addToShortlist = async (req, res) => {
       .json({ message: "Internal Server Error", error: error.message });
   }
 };
+
 // Get all shortlisted universities for a specific user
 export const getShortlistedUniversities = async (req, res) => {
   try {
@@ -63,7 +70,9 @@ export const getShortlistedUniversities = async (req, res) => {
 
     const shortlisted = await ShortlistedUniversity.find({
       user: userId,
-    }).lean();
+    })
+      .populate("university", "universityName country") // 🔹 Populate only required fields
+      .lean();
 
     res.status(200).json({ shortlistedUniversities: shortlisted });
   } catch (error) {
@@ -73,6 +82,7 @@ export const getShortlistedUniversities = async (req, res) => {
       .json({ message: "Internal Server Error", error: error.message });
   }
 };
+
 // Remove a university from the shortlist
 export const removeFromShortlist = async (req, res) => {
   try {

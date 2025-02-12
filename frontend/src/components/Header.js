@@ -74,11 +74,11 @@ const Header = () => {
             <Nav.Link as={Link} to="/shortlisted" className="fw-semibold">
               Shortlisted
             </Nav.Link>
-            <Nav.Link as={Link} to="/contact" className="fw-semibold">
-              Contact Us
-            </Nav.Link>
             <Nav.Link as={Link} to="/applied" className="fw-semibold">
               Applied
+            </Nav.Link>
+            <Nav.Link as={Link} to="/contact" className="fw-semibold">
+              Contact Us
             </Nav.Link>
             {isAdmin && (
               <Nav.Link

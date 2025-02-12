@@ -9,6 +9,8 @@ import {
   Button,
   Spinner,
   Alert,
+  Modal,
+  Form,
 } from "react-bootstrap";
 
 const Shortlisted = () => {
@@ -16,7 +18,10 @@ const Shortlisted = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-  const [isRemoving, setIsRemoving] = useState(false); // State for tracking removal loading
+  const [isApplying, setIsApplying] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedUniversity, setSelectedUniversity] = useState(null);
+  const [applicationNumber, setApplicationNumber] = useState(""); // Store application number
   const { state } = useAuth();
   const { token } = state;
 
@@ -34,27 +39,13 @@ const Shortlisted = () => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
-        console.log("Shortlisted universities:", response.data); // Debugging output
-
-        // Check if the response contains the correct array or just a single shortlisted university
-        if (
-          response.data?.shortlistedUniversities &&
-          Array.isArray(response.data.shortlistedUniversities)
-        ) {
+        if (Array.isArray(response.data.shortlistedUniversities)) {
           setShortlisted(response.data.shortlistedUniversities);
-        } else if (response.data?.shortlist) {
-          // If a single university was returned
-          setShortlisted([response.data.shortlist]);
         } else {
-          console.warn("Unexpected response format:", response.data);
           setShortlisted([]);
         }
       } catch (error) {
-        console.error("Error fetching shortlisted universities:", error);
-        setError(
-          error.response?.data?.message ||
-            "Failed to fetch shortlisted universities."
-        );
+        setError("Failed to fetch shortlisted universities.");
       } finally {
         setIsLoading(false);
       }
@@ -63,44 +54,38 @@ const Shortlisted = () => {
     fetchShortlistedUniversities();
   }, [token, state.user?._id]);
 
-  const handleRemoveShortlist = async (universityId) => {
-    if (!token || !universityId) {
-      console.error("Missing token or university ID", { token, universityId });
+  const handleApplyClick = (university) => {
+    setSelectedUniversity(university);
+    setShowModal(true);
+  };
+
+  const handleApply = async () => {
+    if (!selectedUniversity || !applicationNumber) {
+      setError("Please enter an application number.");
       return;
     }
 
     try {
-      setIsRemoving(true); // Set loading to true
-      console.log("Removing university with ID:", universityId);
+      setIsApplying(true);
 
-      const userId = state.user._id;
-
-      // Ensure you're passing the correct URL and params
-      await axios.delete(
-        `http://localhost:8111/api/universities/shortlist/${userId}/${universityId}`,
+      const response = await axios.post(
+        "http://localhost:8111/api/applied/apply",
+        { universityId: selectedUniversity._id, applicationNumber },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      console.log("Successfully removed university:", universityId);
-
-      // Update the state
-      setShortlisted((prevShortlist) =>
-        prevShortlist.filter((item) => item.university._id !== universityId)
-      );
-
-      setSuccessMessage("University removed from shortlist.");
+      console.log("Application successful:", response.data);
+      setSuccessMessage("University successfully applied!");
       setTimeout(() => setSuccessMessage(null), 3000);
+      setShowModal(false);
+      setApplicationNumber("");
     } catch (error) {
-      console.error(
-        "Error removing shortlisted university:",
-        error.response?.data || error
-      );
+      console.error("Failed to apply:", error.response?.data || error);
       setError(
-        error.response?.data?.message ||
-          "Failed to remove the university. Please try again."
+        error.response?.data?.message || "Failed to apply. Please try again."
       );
     } finally {
-      setIsRemoving(false); // Reset loading state
+      setIsApplying(false);
     }
   };
 
@@ -140,9 +125,8 @@ const Shortlisted = () => {
 
       <Row>
         {shortlisted.map((item) => {
-          const { university, _id } = item; // Destructure university and _id from item
-
-          if (!university) return null; // Skip if university data is missing
+          const { university, _id } = item;
+          if (!university) return null;
 
           return (
             <Col md={4} key={_id} className="mb-4">
@@ -161,23 +145,49 @@ const Shortlisted = () => {
                   <Card.Text>
                     <strong>Location:</strong> {university.location || "N/A"}
                   </Card.Text>
-                  <Button
-                    variant="danger"
-                    onClick={() => handleRemoveShortlist(university._id)} // Pass university._id here
-                    disabled={isRemoving} // Disable button during the removal process
-                  >
-                    {isRemoving ? (
-                      <Spinner animation="border" size="sm" />
-                    ) : (
-                      "Remove"
-                    )}
-                  </Button>
+                  <div className="d-flex justify-content-between">
+                    <Button
+                      variant="success"
+                      onClick={() => handleApplyClick(university)}
+                    >
+                      Apply
+                    </Button>
+                    <Button variant="danger">Remove</Button>
+                  </div>
                 </Card.Body>
               </Card>
             </Col>
           );
         })}
       </Row>
+
+      {/* Apply Modal */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            Apply to {selectedUniversity?.universityName}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group>
+            <Form.Label>Application Number</Form.Label>
+            <Form.Control
+              type="text"
+              value={applicationNumber}
+              onChange={(e) => setApplicationNumber(e.target.value)}
+              placeholder="Enter application number"
+            />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleApply} disabled={isApplying}>
+            {isApplying ? <Spinner animation="border" size="sm" /> : "Submit"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };
