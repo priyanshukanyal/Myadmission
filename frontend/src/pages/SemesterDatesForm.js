@@ -230,6 +230,99 @@ const SemesterDatesForm = () => {
           </div>
         ))}
 
+        {/* Additional Fields */}
+        <div style={{ marginBottom: "15px" }}>
+          <label style={{ display: "block", fontWeight: "bold" }}>
+            About University
+          </label>
+          <textarea
+            name="aboutUniversity"
+            value={formData.aboutUniversity}
+            onChange={handleChange}
+            required
+            style={{
+              padding: "10px",
+              width: "100%",
+              borderRadius: "4px",
+              border: "1px solid #ccc",
+            }}
+          />
+        </div>
+
+        <div style={{ marginBottom: "15px" }}>
+          <label style={{ display: "block", fontWeight: "bold" }}>
+            Hostel Availablity in University and Cost
+          </label>
+          <input
+            type="text"
+            name="security"
+            value={formData.security}
+            onChange={handleChange}
+            required
+            style={{
+              padding: "10px",
+              width: "100%",
+              borderRadius: "4px",
+              border: "1px solid #ccc",
+            }}
+          />
+        </div>
+
+        <div style={{ marginBottom: "15px" }}>
+          <label style={{ display: "block", fontWeight: "bold" }}>
+            Weather in that city
+          </label>
+          <input
+            type="text"
+            name="weather"
+            value={formData.weather}
+            onChange={handleChange}
+            required
+            style={{
+              padding: "10px",
+              width: "100%",
+              borderRadius: "4px",
+              border: "1px solid #ccc",
+            }}
+          />
+        </div>
+
+        <div style={{ marginBottom: "15px" }}>
+          <label style={{ display: "block", fontWeight: "bold" }}>
+            Placement previous year
+          </label>
+          <input
+            type="text"
+            name="placement"
+            value={formData.placement}
+            onChange={handleChange}
+            required
+            style={{
+              padding: "10px",
+              width: "100%",
+              borderRadius: "4px",
+              border: "1px solid #ccc",
+            }}
+          />
+        </div>
+
+        <div style={{ marginBottom: "15px" }}>
+          <label style={{ display: "block", fontWeight: "bold" }}>Visa</label>
+          <input
+            type="text"
+            name="visa"
+            value={formData.visa}
+            onChange={handleChange}
+            required
+            style={{
+              padding: "10px",
+              width: "100%",
+              borderRadius: "4px",
+              border: "1px solid #ccc",
+            }}
+          />
+        </div>
+
         <button
           type="submit"
           disabled={loading}

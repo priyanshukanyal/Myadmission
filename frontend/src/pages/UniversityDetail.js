@@ -344,15 +344,12 @@ const UniversityDetail = () => {
                   <strong>Weather:</strong> {semesterData.weather || "N/A"}
                 </p>
                 <p>
-                  <strong>Security:</strong> {semesterData.security || "N/A"}
+                  <strong>Hostel:</strong> {semesterData.security || "N/A"}
                 </p>
                 <p>
                   <strong>Placement:</strong> {semesterData.placement || "N/A"}
                 </p>
               </div>
-              <p>
-                <strong>Placement:</strong> {semesterData.placement || "N/A"}
-              </p>
             </div>
           ) : (
             <p>No semester application data available for this university.</p>
